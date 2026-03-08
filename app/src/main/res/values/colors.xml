@@ -1,10 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+
+    <!-- Backgrounds (darkest to lightest) -->
+    <color name="bg_deep">#FF0A0710</color>
+    <color name="bg_base">#FF100D1A</color>
+    <color name="bg_surface">#FF1A1528</color>
+    <color name="bg_elevated">#FF231D35</color>
+    <color name="bg_outline">#FF2E2647</color>
+
+    <!-- Purple brand -->
+    <color name="violet">#FF7C3AED</color>
+    <color name="violet_light">#FF9F67F5</color>
+    <color name="violet_soft">#FFB794F6</color>
+
+    <!-- Green accent -->
+    <color name="emerald">#FF10B981</color>
+    <color name="emerald_light">#FF34D399</color>
+    <color name="emerald_soft">#FF6EE7B7</color>
+
+    <!-- Gradient stops -->
+    <color name="grad_start">#FF6D28D9</color>
+    <color name="grad_mid">#FF4F46E5</color>
+    <color name="grad_end">#FF059669</color>
+
+    <!-- Semantic colors -->
+    <color name="amber">#FFF59E0B</color>
+    <color name="rose">#FFEF4444</color>
+
+    <!-- Text -->
+    <color name="snow">#FFFFFFFF</color>
+    <color name="mist">#FFD4BBFF</color>
+    <color name="fog">#FF6B5F8A</color>
+
 </resources>
