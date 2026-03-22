@@ -45,11 +45,12 @@ fun ProfileScreen(
     onSettingsClick: () -> Unit = {},
     onTripClick    : (String) -> Unit = {}
 ) {
+    val c = AppTheme.colors
     val userName  = stringResource(R.string.user_name)
     val userEmail = stringResource(R.string.user_email)
 
     Scaffold(
-        containerColor = BgBase,
+        containerColor = c.bgBase,
         topBar = { ProfileTopBar(onBack = onBack) }
     ) { innerPadding ->
         LazyColumn(
@@ -65,14 +66,14 @@ fun ProfileScreen(
                     modifier = Modifier
                         .size(96.dp)
                         .clip(CircleShape)
-                        .background(Brush.linearGradient(listOf(Violet, Emerald)))
-                        .border(3.dp, BgOutline, CircleShape),
+                        .background(Brush.linearGradient(listOf(c.violet, c.emerald)))
+                        .border(3.dp, c.bgOutline, CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text       = userName.first().uppercase(),
                         fontSize   = 38.sp,
-                        color      = Snow,
+                        color      = c.snow,
                         fontWeight = FontWeight.ExtraBold
                     )
                 }
@@ -80,7 +81,7 @@ fun ProfileScreen(
                 Text(
                     text       = userName,
                     style      = MaterialTheme.typography.headlineMedium,
-                    color      = Snow,
+                    color      = c.snow,
                     fontWeight = FontWeight.ExtraBold,
                     textAlign  = TextAlign.Center
                 )
@@ -88,19 +89,19 @@ fun ProfileScreen(
                 Text(
                     text      = userEmail,
                     style     = MaterialTheme.typography.bodyMedium,
-                    color     = Fog,
+                    color     = c.fog,
                     textAlign = TextAlign.Center
                 )
                 Spacer(Modifier.height(8.dp))
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(20.dp))
-                        .background(Emerald.copy(alpha = 0.15f))
-                        .border(1.dp, Emerald.copy(alpha = 0.4f), RoundedCornerShape(20.dp))
+                        .background(c.emerald.copy(alpha = 0.15f))
+                        .border(1.dp, c.emerald.copy(alpha = 0.4f), RoundedCornerShape(20.dp))
                         .padding(horizontal = 14.dp, vertical = 5.dp)
                 ) {
                     Text("✦ Explorer", style = MaterialTheme.typography.labelLarge,
-                        color = EmeraldLight, fontWeight = FontWeight.Bold)
+                        color = c.emeraldLight, fontWeight = FontWeight.Bold)
                 }
                 Spacer(Modifier.height(28.dp))
             }
@@ -112,16 +113,16 @@ fun ProfileScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp)
                         .clip(RoundedCornerShape(20.dp))
-                        .background(CardSurface)
-                        .border(1.dp, BgOutline, RoundedCornerShape(20.dp))
+                        .background(c.cardSurface)
+                        .border(1.dp, c.bgOutline, RoundedCornerShape(20.dp))
                         .padding(vertical = 20.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment     = Alignment.CenterVertically
                 ) {
                     ProfileStatChip("${MOCK_TRIPS.size}", "TRIPS")
-                    Box(Modifier.width(1.dp).height(36.dp).background(BgOutline))
+                    Box(Modifier.width(1.dp).height(36.dp).background(c.bgOutline))
                     ProfileStatChip("$MOCK_TOTAL_NIGHTS", "NIGHTS")
-                    Box(Modifier.width(1.dp).height(36.dp).background(BgOutline))
+                    Box(Modifier.width(1.dp).height(36.dp).background(c.bgOutline))
                     ProfileStatChip("€$MOCK_TOTAL_BUDGET", "BUDGET")
                 }
                 Spacer(Modifier.height(24.dp))
@@ -135,32 +136,32 @@ fun ProfileScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp)
                         .clip(RoundedCornerShape(16.dp))
-                        .background(CardSurface)
-                        .border(1.dp, BgOutline, RoundedCornerShape(16.dp))
+                        .background(c.cardSurface)
+                        .border(1.dp, c.bgOutline, RoundedCornerShape(16.dp))
                         .padding(16.dp)
                 ) {
                     Row(
                         modifier              = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Total spending", style = MaterialTheme.typography.bodyMedium, color = Fog)
+                        Text("Total spending", style = MaterialTheme.typography.bodyMedium, color = c.fog)
                         Text("€$MOCK_TOTAL_SPENT / €$MOCK_TOTAL_BUDGET",
                             style = MaterialTheme.typography.labelLarge,
-                            color = VioletLight, fontWeight = FontWeight.Bold)
+                            color = c.violetLight, fontWeight = FontWeight.Bold)
                     }
                     Spacer(Modifier.height(10.dp))
                     Box(
                         modifier = Modifier.fillMaxWidth().height(6.dp)
-                            .clip(RoundedCornerShape(3.dp)).background(BgOutline)
+                            .clip(RoundedCornerShape(3.dp)).background(c.bgOutline)
                     ) {
                         Box(
                             modifier = Modifier.fillMaxWidth(spendProgress).fillMaxHeight()
-                                .background(Brush.horizontalGradient(listOf(Violet, Emerald)))
+                                .background(Brush.horizontalGradient(listOf(c.violet, c.emerald)))
                         )
                     }
                     Spacer(Modifier.height(6.dp))
                     Text("${(spendProgress * 100).toInt()}% of total budget used",
-                        style = MaterialTheme.typography.bodySmall, color = Fog)
+                        style = MaterialTheme.typography.bodySmall, color = c.fog)
                 }
                 Spacer(Modifier.height(24.dp))
             }
@@ -174,7 +175,7 @@ fun ProfileScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp)
                         .clip(RoundedCornerShape(16.dp))
-                        .background(CardSurface)
+                        .background(c.cardSurface)
                 ) {
                     MOCK_TRIPS.forEachIndexed { index, trip ->
                         Row(
@@ -188,21 +189,21 @@ fun ProfileScreen(
                                 modifier = Modifier
                                     .size(44.dp)
                                     .clip(RoundedCornerShape(12.dp))
-                                    .background(Brush.linearGradient(listOf(GradStart, GradEnd))),
+                                    .background(Brush.linearGradient(listOf(c.gradStart, c.gradEnd))),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(trip.emoji, fontSize = 20.sp)
                             }
                             Spacer(Modifier.width(14.dp))
                             Column(modifier = Modifier.weight(1f)) {
-                                Text(trip.title, style = MaterialTheme.typography.titleMedium, color = Snow)
-                                Text(trip.dates, style = MaterialTheme.typography.bodySmall,   color = Fog)
+                                Text(trip.title, style = MaterialTheme.typography.titleMedium, color = c.snow)
+                                Text(trip.dates, style = MaterialTheme.typography.bodySmall,   color = c.fog)
                             }
                             Icon(Icons.AutoMirrored.Rounded.ArrowForward, contentDescription = null,
-                                tint = EmeraldLight, modifier = Modifier.size(20.dp))
+                                tint = c.emeraldLight, modifier = Modifier.size(20.dp))
                         }
                         if (index < MOCK_TRIPS.lastIndex) {
-                            HorizontalDivider(color = BgOutline, thickness = 0.5.dp)
+                            HorizontalDivider(color = c.bgOutline, thickness = 0.5.dp)
                         }
                     }
                 }
@@ -218,15 +219,15 @@ fun ProfileScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp)
                         .clip(RoundedCornerShape(16.dp))
-                        .background(CardSurface)
+                        .background(c.cardSurface)
                 ) {
-                    ProfileActionRow(icon = Icons.Rounded.Person,        label = "Edit profile",       tint = VioletLight)
-                    HorizontalDivider(color = BgOutline, thickness = 0.5.dp)
-                    ProfileActionRow(icon = Icons.Rounded.Notifications,  label = "Notifications",      tint = VioletLight, onClick = onSettingsClick)
-                    HorizontalDivider(color = BgOutline, thickness = 0.5.dp)
-                    ProfileActionRow(icon = Icons.Rounded.Lock,           label = "Privacy & security", tint = VioletLight)
-                    HorizontalDivider(color = BgOutline, thickness = 0.5.dp)
-                    ProfileActionRow(icon = Icons.Rounded.Close,          label = "Log out",            tint = Rose)
+                    ProfileActionRow(icon = Icons.Rounded.Person,        label = "Edit profile",       tint = c.violetLight)
+                    HorizontalDivider(color = c.bgOutline, thickness = 0.5.dp)
+                    ProfileActionRow(icon = Icons.Rounded.Notifications,  label = "Notifications",      tint = c.violetLight, onClick = onSettingsClick)
+                    HorizontalDivider(color = c.bgOutline, thickness = 0.5.dp)
+                    ProfileActionRow(icon = Icons.Rounded.Lock,           label = "Privacy & security", tint = c.violetLight)
+                    HorizontalDivider(color = c.bgOutline, thickness = 0.5.dp)
+                    ProfileActionRow(icon = Icons.Rounded.Close,          label = "Log out",            tint = c.rose)
                 }
             }
         }
@@ -238,17 +239,18 @@ fun ProfileScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProfileTopBar(onBack: () -> Unit) {
+    val c = AppTheme.colors
     TopAppBar(
         title = {
             Text("Profile", style = MaterialTheme.typography.titleLarge,
-                color = Snow, fontWeight = FontWeight.Bold)
+                color = c.snow, fontWeight = FontWeight.Bold)
         },
         navigationIcon = {
             IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", tint = Snow)
+                Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", tint = c.snow)
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = BgBase)
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = c.bgBase)
     )
 }
 
@@ -256,8 +258,9 @@ private fun ProfileTopBar(onBack: () -> Unit) {
 
 @Composable
 private fun ProfileSection(title: String) {
+    val c = AppTheme.colors
     Text(text = title, style = MaterialTheme.typography.labelLarge,
-        color = VioletLight, fontWeight = FontWeight.Bold,
+        color = c.violetLight, fontWeight = FontWeight.Bold,
         modifier = Modifier.padding(horizontal = 24.dp))
 }
 
@@ -265,10 +268,11 @@ private fun ProfileSection(title: String) {
 
 @Composable
 private fun ProfileStatChip(value: String, label: String) {
+    val c = AppTheme.colors
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(value, style = MaterialTheme.typography.headlineMedium,
-            color = Snow, fontWeight = FontWeight.ExtraBold)
-        Text(label, style = MaterialTheme.typography.labelSmall, color = Fog)
+            color = c.snow, fontWeight = FontWeight.ExtraBold)
+        Text(label, style = MaterialTheme.typography.labelSmall, color = c.fog)
     }
 }
 
@@ -281,6 +285,7 @@ private fun ProfileActionRow(
     tint   : androidx.compose.ui.graphics.Color,
     onClick: () -> Unit = {}
 ) {
+    val c = AppTheme.colors
     Row(
         modifier          = Modifier
             .fillMaxWidth()
@@ -290,9 +295,9 @@ private fun ProfileActionRow(
     ) {
         Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(20.dp))
         Spacer(Modifier.width(14.dp))
-        Text(label, style = MaterialTheme.typography.bodyLarge, color = Snow,
+        Text(label, style = MaterialTheme.typography.bodyLarge, color = c.snow,
             modifier = Modifier.weight(1f))
         Icon(Icons.AutoMirrored.Rounded.ArrowForward, contentDescription = null,
-            tint = Fog, modifier = Modifier.size(18.dp))
+            tint = c.fog, modifier = Modifier.size(18.dp))
     }
 }

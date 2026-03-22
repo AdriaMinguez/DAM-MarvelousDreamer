@@ -36,6 +36,7 @@ fun TripGalleryScreen(
     tripId: String,
     onBack: () -> Unit
 ) {
+    val c = AppTheme.colors
     val filterAll   = stringResource(R.string.gallery_filter_all)
     val filterTop   = stringResource(R.string.gallery_filter_top)
     val filterVideo = stringResource(R.string.gallery_filter_video)
@@ -51,7 +52,7 @@ fun TripGalleryScreen(
     }
 
     Scaffold(
-        containerColor = BgBase,
+        containerColor = c.bgBase,
         topBar = {
             GalleryTopBar(
                 tripId = tripId,
@@ -81,16 +82,16 @@ fun TripGalleryScreen(
                             onClick  = { selectedFilter = filter },
                             label    = { Text(filter, style = MaterialTheme.typography.labelLarge) },
                             colors   = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor    = Violet,
-                                selectedLabelColor        = Snow,
-                                containerColor            = CardSurface,
-                                labelColor                = Fog
+                                selectedContainerColor    = c.violet,
+                                selectedLabelColor        = c.snow,
+                                containerColor            = c.cardSurface,
+                                labelColor                = c.fog
                             ),
                             border = FilterChipDefaults.filterChipBorder(
                                 enabled          = true,
                                 selected         = selectedFilter == filter,
-                                borderColor      = BgOutline,
-                                selectedBorderColor = Violet
+                                borderColor      = c.bgOutline,
+                                selectedBorderColor = c.violet
                             )
                         )
                     }
@@ -98,8 +99,8 @@ fun TripGalleryScreen(
                 // Add button
                 SmallFloatingActionButton(
                     onClick        = { /* @TODO pick image */ },
-                    containerColor = Violet,
-                    contentColor   = Snow,
+                    containerColor = c.violet,
+                    contentColor   = c.snow,
                     shape          = RoundedCornerShape(12.dp)
                 ) {
                     Icon(Icons.Rounded.Add, contentDescription = stringResource(R.string.gallery_add_photo))
@@ -129,6 +130,7 @@ fun TripGalleryScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun GalleryTopBar(tripId: String, onBack: () -> Unit) {
+    val c = AppTheme.colors
     val title = when (tripId) {
         "trip_kyoto"   -> "Kyoto Escape"
         "trip_morocco" -> "Moroccan Dream"
@@ -139,16 +141,16 @@ private fun GalleryTopBar(tripId: String, onBack: () -> Unit) {
             Text(
                 text       = "$title · Gallery",
                 style      = MaterialTheme.typography.titleLarge,
-                color      = Snow,
+                color      = c.snow,
                 fontWeight = FontWeight.Bold
             )
         },
         navigationIcon = {
             IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", tint = Snow)
+                Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", tint = c.snow)
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = BgBase)
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = c.bgBase)
     )
 }
 
@@ -156,6 +158,7 @@ private fun GalleryTopBar(tripId: String, onBack: () -> Unit) {
 
 @Composable
 private fun GalleryCell(item: GalleryItemModel) {
+    val c = AppTheme.colors
     Box(
         modifier = Modifier
             .aspectRatio(1f)
@@ -163,8 +166,8 @@ private fun GalleryCell(item: GalleryItemModel) {
             .background(
                 Brush.linearGradient(
                     listOf(
-                        CardSurface,
-                        BgElevated
+                        c.cardSurface,
+                        c.bgElevated
                     )
                 )
             )
@@ -183,10 +186,10 @@ private fun GalleryCell(item: GalleryItemModel) {
                     .align(Alignment.BottomStart)
                     .padding(6.dp)
                     .clip(RoundedCornerShape(4.dp))
-                    .background(BgBase.copy(alpha = 0.75f))
+                    .background(c.bgBase.copy(alpha = 0.75f))
                     .padding(horizontal = 5.dp, vertical = 2.dp)
             ) {
-                Text("▶", fontSize = 9.sp, color = Snow)
+                Text("▶", fontSize = 9.sp, color = c.snow)
             }
         }
 
@@ -197,10 +200,10 @@ private fun GalleryCell(item: GalleryItemModel) {
                     .align(Alignment.TopStart)
                     .padding(6.dp)
                     .clip(RoundedCornerShape(4.dp))
-                    .background(Amber.copy(alpha = 0.9f))
+                    .background(c.amber.copy(alpha = 0.9f))
                     .padding(horizontal = 5.dp, vertical = 2.dp)
             ) {
-                Text("★ TOP", fontSize = 9.sp, color = BgBase, fontWeight = FontWeight.Bold)
+                Text("★ TOP", fontSize = 9.sp, color = c.bgBase, fontWeight = FontWeight.Bold)
             }
         }
 
@@ -211,12 +214,12 @@ private fun GalleryCell(item: GalleryItemModel) {
                 .padding(6.dp)
                 .size(20.dp)
                 .clip(RoundedCornerShape(10.dp))
-                .background(BgBase.copy(alpha = 0.7f))
+                .background(c.bgBase.copy(alpha = 0.7f))
         ) {
             Icon(
                 imageVector        = Icons.Rounded.Close,
                 contentDescription = "Delete",
-                tint               = Snow,
+                tint               = c.snow,
                 modifier           = Modifier
                     .size(14.dp)
                     .align(Alignment.Center)
@@ -232,7 +235,7 @@ private fun GalleryCell(item: GalleryItemModel) {
                     Brush.verticalGradient(
                         listOf(
                             androidx.compose.ui.graphics.Color.Transparent,
-                            BgBase.copy(alpha = 0.7f)
+                            c.bgBase.copy(alpha = 0.7f)
                         )
                     )
                 )
@@ -241,7 +244,7 @@ private fun GalleryCell(item: GalleryItemModel) {
             Text(
                 text  = item.caption,
                 style = MaterialTheme.typography.labelSmall,
-                color = Snow,
+                color = c.snow,
                 maxLines = 1
             )
         }

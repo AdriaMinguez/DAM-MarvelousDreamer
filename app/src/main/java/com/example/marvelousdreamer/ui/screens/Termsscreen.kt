@@ -28,6 +28,7 @@ fun TermsScreen(
     onAccept : () -> Unit,
     onDecline: () -> Unit
 ) {
+    val c = AppTheme.colors
     val title   = stringResource(R.string.terms_title)
     val updated = stringResource(R.string.terms_updated)
 
@@ -40,7 +41,7 @@ fun TermsScreen(
     )
 
     Scaffold(
-        containerColor = BgBase,
+        containerColor = c.bgBase,
         topBar = {
             TermsTopBar(title = title, onBack = onDecline)
         },
@@ -60,7 +61,7 @@ fun TermsScreen(
                 Text(
                     text  = updated,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Fog
+                    color = c.fog
                 )
                 Spacer(Modifier.height(4.dp))
             }
@@ -79,16 +80,17 @@ fun TermsScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TermsTopBar(title: String, onBack: () -> Unit) {
+    val c = AppTheme.colors
     TopAppBar(
         title = {
-            Text(title, style = MaterialTheme.typography.titleLarge, color = Snow, fontWeight = FontWeight.Bold)
+            Text(title, style = MaterialTheme.typography.titleLarge, color = c.snow, fontWeight = FontWeight.Bold)
         },
         navigationIcon = {
             IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", tint = Snow)
+                Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", tint = c.snow)
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = BgBase)
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = c.bgBase)
     )
 }
 
@@ -96,24 +98,25 @@ private fun TermsTopBar(title: String, onBack: () -> Unit) {
 
 @Composable
 private fun TermsSection(title: String, body: String) {
+    val c = AppTheme.colors
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(CardSurface)
+            .background(c.cardSurface)
             .padding(16.dp)
     ) {
         Text(
             text       = title,
             style      = MaterialTheme.typography.titleMedium,
-            color      = Snow,
+            color      = c.snow,
             fontWeight = FontWeight.Bold
         )
         Spacer(Modifier.height(8.dp))
         Text(
             text  = body,
             style = MaterialTheme.typography.bodyMedium,
-            color = Mist
+            color = c.mist
         )
     }
 }
@@ -122,8 +125,9 @@ private fun TermsSection(title: String, body: String) {
 
 @Composable
 private fun TermsBottomBar(onAccept: () -> Unit, onDecline: () -> Unit) {
+    val c = AppTheme.colors
     Surface(
-        color = CardSurface,
+        color = c.cardSurface,
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -138,8 +142,8 @@ private fun TermsBottomBar(onAccept: () -> Unit, onDecline: () -> Unit) {
                 onClick  = onDecline,
                 modifier = Modifier.weight(1f),
                 shape    = RoundedCornerShape(14.dp),
-                colors   = ButtonDefaults.outlinedButtonColors(contentColor = Fog),
-                border   = androidx.compose.foundation.BorderStroke(1.dp, BgOutline)
+                colors   = ButtonDefaults.outlinedButtonColors(contentColor = c.fog),
+                border   = androidx.compose.foundation.BorderStroke(1.dp, c.bgOutline)
             ) {
                 Text(
                     text  = stringResource(R.string.terms_decline),
@@ -153,8 +157,8 @@ private fun TermsBottomBar(onAccept: () -> Unit, onDecline: () -> Unit) {
                 modifier = Modifier.weight(2f),
                 shape    = RoundedCornerShape(14.dp),
                 colors   = ButtonDefaults.buttonColors(
-                    containerColor = Violet,
-                    contentColor   = Snow
+                    containerColor = c.violet,
+                    contentColor   = c.snow
                 )
             ) {
                 Text(

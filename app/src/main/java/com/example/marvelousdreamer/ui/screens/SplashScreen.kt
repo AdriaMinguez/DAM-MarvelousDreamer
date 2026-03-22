@@ -25,6 +25,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(onFinished: () -> Unit) {
+    val c = AppTheme.colors
 
     val appName     = stringResource(R.string.app_name)
     val appTagline  = stringResource(R.string.app_tagline)
@@ -51,19 +52,19 @@ fun SplashScreen(onFinished: () -> Unit) {
     }
 
     Box(
-        modifier         = Modifier.fillMaxSize().background(BgBase),
+        modifier         = Modifier.fillMaxSize().background(c.bgBase),
         contentAlignment = Alignment.Center
     ) {
         // Glow morat
         Box(
             modifier = Modifier.size(360.dp).background(
-                Brush.radialGradient(listOf(Violet.copy(alpha = 0.20f), BgBase.copy(alpha = 0f)))
+                Brush.radialGradient(listOf(c.violet.copy(alpha = 0.20f), c.bgBase.copy(alpha = 0f)))
             )
         )
         // Glow verd inferior
         Box(
             modifier = Modifier.size(280.dp).offset(y = 120.dp).background(
-                Brush.radialGradient(listOf(Emerald.copy(alpha = 0.10f), BgBase.copy(alpha = 0f)))
+                Brush.radialGradient(listOf(c.emerald.copy(alpha = 0.10f), c.bgBase.copy(alpha = 0f)))
             )
         )
 
@@ -86,7 +87,7 @@ fun SplashScreen(onFinished: () -> Unit) {
             Text(
                 text       = appName,
                 style      = MaterialTheme.typography.displayLarge,
-                color      = Snow,
+                color      = c.snow,
                 fontWeight = FontWeight.ExtraBold,
                 textAlign  = TextAlign.Center
             )
@@ -96,7 +97,7 @@ fun SplashScreen(onFinished: () -> Unit) {
             Text(
                 text      = appTagline,
                 style     = MaterialTheme.typography.bodyMedium,
-                color     = Mist,
+                color     = c.mist,
                 textAlign = TextAlign.Center
             )
 
@@ -105,13 +106,13 @@ fun SplashScreen(onFinished: () -> Unit) {
             // Barra de progrés amb gradient morat→verd
             Box(
                 modifier = Modifier.fillMaxWidth().height(3.dp).clip(RoundedCornerShape(2.dp))
-                    .background(BgOutline)
+                    .background(c.bgOutline)
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth(animProgress.value)
                         .fillMaxHeight()
-                        .background(Brush.horizontalGradient(listOf(Violet, Emerald)))
+                        .background(Brush.horizontalGradient(listOf(c.violet, c.emerald)))
                 )
             }
 
@@ -120,7 +121,7 @@ fun SplashScreen(onFinished: () -> Unit) {
             Text(
                 text          = loadingText,
                 style         = MaterialTheme.typography.labelSmall,
-                color         = Fog,
+                color         = c.fog,
                 letterSpacing = 2.sp
             )
 
@@ -129,7 +130,7 @@ fun SplashScreen(onFinished: () -> Unit) {
             Text(
                 text  = "v$appVersion · $appSprint",
                 style = MaterialTheme.typography.bodySmall,
-                color = Fog.copy(alpha = 0.6f)
+                color = c.fog.copy(alpha = 0.6f)
             )
         }
     }

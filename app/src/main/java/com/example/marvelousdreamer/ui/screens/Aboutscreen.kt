@@ -33,6 +33,7 @@ import com.example.marvelousdreamer.ui.themes.*
  */
 @Composable
 fun AboutScreen(onBack: () -> Unit) {
+    val c = AppTheme.colors
 
     val appName    = stringResource(R.string.app_name)
     val appVersion = stringResource(R.string.app_version)
@@ -40,7 +41,7 @@ fun AboutScreen(onBack: () -> Unit) {
     val appBuiltAt = stringResource(R.string.app_built_at)
 
     Scaffold(
-        containerColor = BgBase,
+        containerColor = c.bgBase,
         topBar = {
             AboutTopBar(onBack = onBack)
         }
@@ -66,7 +67,7 @@ fun AboutScreen(onBack: () -> Unit) {
                 Text(
                     text       = appName,
                     style      = MaterialTheme.typography.headlineLarge,
-                    color      = Snow,
+                    color      = c.snow,
                     fontWeight = FontWeight.ExtraBold,
                     textAlign  = TextAlign.Center
                 )
@@ -74,20 +75,20 @@ fun AboutScreen(onBack: () -> Unit) {
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(Violet.copy(alpha = 0.2f))
+                        .background(c.violet.copy(alpha = 0.2f))
                         .padding(horizontal = 12.dp, vertical = 4.dp)
                 ) {
                     Text(
                         text  = "v$appVersion",
                         style = MaterialTheme.typography.labelLarge,
-                        color = VioletLight
+                        color = c.violetLight
                     )
                 }
                 Spacer(Modifier.height(8.dp))
                 Text(
                     text      = appTagline,
                     style     = MaterialTheme.typography.bodyMedium,
-                    color     = Fog,
+                    color     = c.fog,
                     textAlign = TextAlign.Center,
                     modifier  = Modifier.padding(horizontal = 40.dp)
                 )
@@ -106,7 +107,7 @@ fun AboutScreen(onBack: () -> Unit) {
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp)
                         .clip(RoundedCornerShape(16.dp))
-                        .background(CardSurface),
+                        .background(c.cardSurface),
                     verticalArrangement = Arrangement.spacedBy(0.dp)
                 ) {
                     TeamMemberRow(
@@ -130,7 +131,7 @@ fun AboutScreen(onBack: () -> Unit) {
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp)
                         .clip(RoundedCornerShape(16.dp))
-                        .background(CardSurface)
+                        .background(c.cardSurface)
                 ) {
                     val rows = listOf(
                         stringResource(R.string.about_tech_version) to stringResource(R.string.app_version),
@@ -142,7 +143,7 @@ fun AboutScreen(onBack: () -> Unit) {
                     rows.forEachIndexed { index, (key, value) ->
                         TechRow(key = key, value = value)
                         if (index < rows.lastIndex) {
-                            HorizontalDivider(color = BgOutline, thickness = 0.5.dp)
+                            HorizontalDivider(color = c.bgOutline, thickness = 0.5.dp)
                         }
                     }
                 }
@@ -154,7 +155,7 @@ fun AboutScreen(onBack: () -> Unit) {
                 Text(
                     text      = appBuiltAt,
                     style     = MaterialTheme.typography.bodySmall,
-                    color     = Fog,
+                    color     = c.fog,
                     textAlign = TextAlign.Center
                 )
             }
@@ -167,21 +168,22 @@ fun AboutScreen(onBack: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AboutTopBar(onBack: () -> Unit) {
+    val c = AppTheme.colors
     TopAppBar(
         title = {
             Text(
                 text       = "About",
                 style      = MaterialTheme.typography.titleLarge,
-                color      = Snow,
+                color      = c.snow,
                 fontWeight = FontWeight.Bold
             )
         },
         navigationIcon = {
             IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", tint = Snow)
+                Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", tint = c.snow)
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = BgBase)
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = c.bgBase)
     )
 }
 
@@ -189,10 +191,11 @@ private fun AboutTopBar(onBack: () -> Unit) {
 
 @Composable
 private fun AboutSection(title: String) {
+    val c = AppTheme.colors
     Text(
         text       = title,
         style      = MaterialTheme.typography.labelLarge,
-        color      = VioletLight,
+        color      = c.violetLight,
         fontWeight = FontWeight.Bold,
         modifier   = Modifier.padding(horizontal = 24.dp)
     )
@@ -202,6 +205,7 @@ private fun AboutSection(title: String) {
 
 @Composable
 private fun TeamMemberRow(initials: String, name: String, role: String) {
+    val c = AppTheme.colors
     Row(
         modifier          = Modifier
             .fillMaxWidth()
@@ -212,15 +216,15 @@ private fun TeamMemberRow(initials: String, name: String, role: String) {
             modifier = Modifier
                 .size(44.dp)
                 .clip(CircleShape)
-                .background(Brush.linearGradient(listOf(Violet, Emerald))),
+                .background(Brush.linearGradient(listOf(c.violet, c.emerald))),
             contentAlignment = Alignment.Center
         ) {
-            Text(initials, style = MaterialTheme.typography.labelLarge, color = Snow, fontWeight = FontWeight.Bold)
+            Text(initials, style = MaterialTheme.typography.labelLarge, color = c.snow, fontWeight = FontWeight.Bold)
         }
         Spacer(Modifier.width(14.dp))
         Column {
-            Text(name, style = MaterialTheme.typography.titleMedium, color = Snow)
-            Text(role, style = MaterialTheme.typography.bodySmall,   color = Fog)
+            Text(name, style = MaterialTheme.typography.titleMedium, color = c.snow)
+            Text(role, style = MaterialTheme.typography.bodySmall,   color = c.fog)
         }
     }
 }
@@ -229,6 +233,7 @@ private fun TeamMemberRow(initials: String, name: String, role: String) {
 
 @Composable
 private fun TechRow(key: String, value: String) {
+    val c = AppTheme.colors
     Row(
         modifier              = Modifier
             .fillMaxWidth()
@@ -236,7 +241,7 @@ private fun TechRow(key: String, value: String) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment     = Alignment.CenterVertically
     ) {
-        Text(key,   style = MaterialTheme.typography.bodyMedium, color = Fog)
-        Text(value, style = MaterialTheme.typography.titleMedium, color = Snow, fontWeight = FontWeight.SemiBold)
+        Text(key,   style = MaterialTheme.typography.bodyMedium, color = c.fog)
+        Text(value, style = MaterialTheme.typography.titleMedium, color = c.snow, fontWeight = FontWeight.SemiBold)
     }
 }
