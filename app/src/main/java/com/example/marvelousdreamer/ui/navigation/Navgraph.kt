@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -24,32 +25,47 @@ import androidx.navigation.navArgument
 import com.example.marvelousdreamer.R
 import com.example.marvelousdreamer.ui.screens.*
 import com.example.marvelousdreamer.ui.themes.*
+import com.example.marvelousdreamer.ui.viewmodel.TripViewModel
 
-// Pantallas on NO volem mostrar el bottom bar
+// Screens that hide the bottom bar
 private val noBottomBarRoutes = setOf(
     Routes.SPLASH,
-    Routes.TERMS
+    Routes.TERMS,
+    Routes.ADD_TRIP,
+    Routes.EDIT_TRIP,
+    Routes.ADD_ACTIVITY,
+    Routes.EDIT_ACTIVITY
 )
 
 @Composable
-fun NavGraph(navController: NavHostController) {
+fun NavGraph(
+    navController: NavHostController,
+    onDarkModeChanged: (Boolean) -> Unit = {},
+    onLanguageChanged: (String) -> Unit = {}
+) {
+    val c = AppTheme.colors
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val showBottomBar = currentRoute !in noBottomBarRoutes &&
-            currentRoute != null
+    val showBottomBar = currentRoute != null &&
+            noBottomBarRoutes.none { pattern ->
+                currentRoute == pattern || currentRoute.startsWith(pattern.substringBefore("{"))
+            }
 
-    // Trackeja quin trip és actiu per enviar-lo a la galeria des del bottom bar
+    // Shared ViewModel — survives navigation between screens
+    val tripViewModel: TripViewModel = viewModel()
+
+    // Tracks the active trip for bottom bar navigation
     var activeTripId by remember { mutableStateOf("trip_kyoto") }
 
     Scaffold(
-        containerColor = BgBase,
+        containerColor = c.bgBase,
         bottomBar = {
             if (showBottomBar) {
                 AppBottomBar(
-                    currentRoute   = currentRoute,
-                    onHomeClick    = {
+                    currentRoute    = currentRoute,
+                    onHomeClick     = {
                         navController.navigate(Routes.HOME) {
                             popUpTo(Routes.HOME) { inclusive = true }
                         }
@@ -81,7 +97,9 @@ fun NavGraph(navController: NavHostController) {
             // ── Home ──────────────────────────────────────────────────────
             composable(Routes.HOME) {
                 HomeScreen(
+                    viewModel       = tripViewModel,
                     onTripClick     = { tripId -> navController.navigate(Routes.tripDetail(tripId)) },
+                    onAddTripClick  = { navController.navigate(Routes.ADD_TRIP) },
                     onSeeAllClick   = { navController.navigate(Routes.TRIPS_LIST) },
                     onProfileClick  = { navController.navigate(Routes.PROFILE) },
                     onTermsClick    = { navController.navigate(Routes.TERMS) },
@@ -99,7 +117,11 @@ fun NavGraph(navController: NavHostController) {
                 if (tripId.isNotEmpty()) {
                     TripDetailScreen(
                         tripId         = tripId,
+                        viewModel      = tripViewModel,
                         onBack         = { navController.navigate(Routes.HOME) { popUpTo(Routes.HOME) { inclusive = true } } },
+                        onEditTrip     = { id -> navController.navigate(Routes.editTrip(id)) },
+                        onAddActivity  = { id -> navController.navigate(Routes.addActivity(id)) },
+                        onEditActivity = { tId, aId -> navController.navigate(Routes.editActivity(tId, aId)) },
                         onGalleryClick = { id -> activeTripId = id; navController.navigate(Routes.tripGallery(id)) },
                         onTripChanged  = { id -> activeTripId = id }
                     )
@@ -128,7 +150,9 @@ fun NavGraph(navController: NavHostController) {
             // ── Preferences ───────────────────────────────────────────────
             composable(Routes.PREFERENCES) {
                 PreferencesScreen(
-                    onBack = { navController.popBackStack() }
+                    onBack = { navController.popBackStack() },
+                    onDarkModeChanged = onDarkModeChanged,
+                    onLanguageChanged = onLanguageChanged
                 )
             }
 
@@ -143,19 +167,13 @@ fun NavGraph(navController: NavHostController) {
 
             // ── About ─────────────────────────────────────────────────────
             composable(Routes.ABOUT) {
-                AboutScreen(
-                    onBack = { navController.popBackStack() }
-                )
+                AboutScreen(onBack = { navController.popBackStack() })
             }
 
             // ── Terms ─────────────────────────────────────────────────────
             composable(Routes.TERMS) {
                 TermsScreen(
-                    onAccept  = {
-                        navController.navigate(Routes.HOME) {
-                            popUpTo(Routes.TERMS) { inclusive = true }
-                        }
-                    },
+                    onAccept  = { navController.navigate(Routes.HOME) { popUpTo(Routes.TERMS) { inclusive = true } } },
                     onDecline = { navController.popBackStack() }
                 )
             }
@@ -164,7 +182,11 @@ fun NavGraph(navController: NavHostController) {
             composable(Routes.TRIPS_LIST) {
                 TripDetailScreen(
                     tripId         = activeTripId,
+                    viewModel      = tripViewModel,
                     onBack         = { navController.navigate(Routes.HOME) { popUpTo(Routes.HOME) { inclusive = true } } },
+                    onEditTrip     = { id -> navController.navigate(Routes.editTrip(id)) },
+                    onAddActivity  = { id -> navController.navigate(Routes.addActivity(id)) },
+                    onEditActivity = { tId, aId -> navController.navigate(Routes.editActivity(tId, aId)) },
                     onGalleryClick = { id -> activeTripId = id; navController.navigate(Routes.tripGallery(id)) },
                     onTripChanged  = { id -> activeTripId = id }
                 )
@@ -177,26 +199,101 @@ fun NavGraph(navController: NavHostController) {
                     onBack = { navController.navigate(Routes.HOME) }
                 )
             }
+
+            // ── Add Trip (Sprint 02) ───────────────────────────────────────
+            composable(Routes.ADD_TRIP) {
+                LaunchedEffect(Unit) { tripViewModel.prepareAddTrip() }
+                AddEditTripScreen(
+                    tripId    = null,
+                    viewModel = tripViewModel,
+                    onBack    = { navController.popBackStack() },
+                    onSaved   = {
+                        navController.navigate(Routes.HOME) {
+                            popUpTo(Routes.HOME) { inclusive = true }
+                        }
+                    }
+                )
+            }
+
+            // ── Edit Trip (Sprint 02) ──────────────────────────────────────
+            composable(
+                route     = Routes.EDIT_TRIP,
+                arguments = listOf(navArgument("tripId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val tripId = backStackEntry.arguments?.getString("tripId") ?: ""
+                val trip   = tripViewModel.trips.value.find { it.id == tripId }
+                if (trip != null) {
+                    LaunchedEffect(tripId) { tripViewModel.prepareEditTrip(trip) }
+                    AddEditTripScreen(
+                        tripId    = tripId,
+                        viewModel = tripViewModel,
+                        onBack    = { navController.popBackStack() },
+                        onSaved   = { navController.popBackStack() }
+                    )
+                }
+            }
+
+            // ── Add Activity (Sprint 02) ───────────────────────────────────
+            composable(
+                route     = Routes.ADD_ACTIVITY,
+                arguments = listOf(navArgument("tripId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val tripId = backStackEntry.arguments?.getString("tripId") ?: ""
+                LaunchedEffect(Unit) { tripViewModel.prepareAddActivity() }
+                AddEditActivityScreen(
+                    tripId     = tripId,
+                    activityId = null,
+                    viewModel  = tripViewModel,
+                    onBack     = { navController.popBackStack() },
+                    onSaved    = { navController.popBackStack() }
+                )
+            }
+
+            // ── Edit Activity (Sprint 02) ──────────────────────────────────
+            composable(
+                route     = Routes.EDIT_ACTIVITY,
+                arguments = listOf(
+                    navArgument("tripId")     { type = NavType.StringType },
+                    navArgument("activityId") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val tripId     = backStackEntry.arguments?.getString("tripId") ?: ""
+                val activityId = backStackEntry.arguments?.getString("activityId") ?: ""
+                val activity   = tripViewModel.trips.value
+                    .find { it.id == tripId }
+                    ?.activities?.find { it.id == activityId }
+                if (activity != null) {
+                    LaunchedEffect(activityId) { tripViewModel.prepareEditActivity(activity) }
+                    AddEditActivityScreen(
+                        tripId     = tripId,
+                        activityId = activityId,
+                        viewModel  = tripViewModel,
+                        onBack     = { navController.popBackStack() },
+                        onSaved    = { navController.popBackStack() }
+                    )
+                }
+            }
         }
     }
 }
 
-// ─── Bottom bar global ────────────────────────────────────────────────────────
+// ─── Bottom bar ───────────────────────────────────────────────────────────────
 
 @Composable
 private fun AppBottomBar(
-    currentRoute   : String?,
-    onHomeClick    : () -> Unit,
-    onTripsClick   : () -> Unit,
-    onGalleryClick : () -> Unit,
-    onSettingsClick: () -> Unit
+    currentRoute    : String?,
+    onHomeClick     : () -> Unit,
+    onTripsClick    : () -> Unit,
+    onGalleryClick  : () -> Unit,
+    onSettingsClick : () -> Unit
 ) {
+    val c = AppTheme.colors
     val navHome     = stringResource(R.string.nav_home)
     val navTrips    = stringResource(R.string.nav_trips)
     val navGallery  = stringResource(R.string.nav_gallery)
     val navSettings = stringResource(R.string.nav_settings)
 
-    Surface(color = CardSurface, modifier = Modifier.fillMaxWidth()) {
+    Surface(color = c.cardSurface, modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier              = Modifier
                 .fillMaxWidth()
@@ -205,36 +302,17 @@ private fun AppBottomBar(
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment     = Alignment.CenterVertically
         ) {
-            BottomNavItem(
-                emoji    = "🏠",
-                label    = navHome,
-                selected = currentRoute == Routes.HOME,
-                onClick  = onHomeClick
-            )
-            BottomNavItem(
-                emoji    = "🗺️",
-                label    = navTrips,
-                selected = currentRoute == Routes.TRIPS_LIST || currentRoute?.startsWith("trip_detail/") == true,
-                onClick  = onTripsClick
-            )
-            BottomNavItem(
-                emoji    = "🖼️",
-                label    = navGallery,
-                selected = currentRoute == Routes.GALLERY_ALL || currentRoute?.startsWith("trip_gallery/") == true,
-                onClick  = onGalleryClick
-            )
-            BottomNavItem(
-                emoji    = "⚙️",
-                label    = navSettings,
-                selected = currentRoute == Routes.PREFERENCES,
-                onClick  = onSettingsClick
-            )
+            BottomNavItem("🏠", navHome,     currentRoute == Routes.HOME,                                         onHomeClick)
+            BottomNavItem("🗺️", navTrips,    currentRoute == Routes.TRIPS_LIST || currentRoute?.startsWith("trip_detail/") == true, onTripsClick)
+            BottomNavItem("🖼️", navGallery,  currentRoute == Routes.GALLERY_ALL || currentRoute?.startsWith("trip_gallery/") == true, onGalleryClick)
+            BottomNavItem("⚙️", navSettings, currentRoute == Routes.PREFERENCES,                                 onSettingsClick)
         }
     }
 }
 
 @Composable
 private fun BottomNavItem(emoji: String, label: String, selected: Boolean, onClick: () -> Unit) {
+    val c = AppTheme.colors
     Column(
         modifier            = Modifier
             .clickable(onClick = onClick)
@@ -247,7 +325,7 @@ private fun BottomNavItem(emoji: String, label: String, selected: Boolean, onCli
         Text(
             text       = label,
             style      = MaterialTheme.typography.labelSmall,
-            color      = if (selected) EmeraldLight else Fog,
+            color      = if (selected) c.emeraldLight else c.fog,
             fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
         )
         Spacer(Modifier.height(4.dp))
@@ -255,7 +333,7 @@ private fun BottomNavItem(emoji: String, label: String, selected: Boolean, onCli
             modifier = Modifier
                 .size(4.dp)
                 .clip(CircleShape)
-                .background(if (selected) EmeraldLight else Color.Transparent)
+                .background(if (selected) c.emeraldLight else Color.Transparent)
         )
     }
 }

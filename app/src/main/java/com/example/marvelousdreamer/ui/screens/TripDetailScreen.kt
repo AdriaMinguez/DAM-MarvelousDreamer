@@ -13,7 +13,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
-import androidx.compose.material.icons.rounded.List
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
@@ -26,79 +28,121 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.marvelousdreamer.R
+import com.example.marvelousdreamer.domain.Activity
+import com.example.marvelousdreamer.domain.ActivityType
+import com.example.marvelousdreamer.domain.Trip
 import com.example.marvelousdreamer.ui.themes.*
+import com.example.marvelousdreamer.ui.viewmodel.TripViewModel
+import java.time.format.DateTimeFormatter
 
-private val ALL_TRIP_IDS = listOf("trip_kyoto", "trip_morocco", "trip_iceland")
-
+/**
+ * Trip Detail Screen — Sprint 02 rewrite.
+ * Now uses ViewModel data instead of hardcoded mock data.
+ * Supports CRUD navigation for activities (T2.1, T2.2, T2.3).
+ */
 @Composable
 fun TripDetailScreen(
-    tripId        : String,
-    onBack        : () -> Unit,
-    onGalleryClick: (String) -> Unit,
-    onTripChanged : (String) -> Unit = {}
+    tripId          : String,
+    viewModel       : TripViewModel,
+    onBack          : () -> Unit,
+    onEditTrip      : (String) -> Unit = {},
+    onAddActivity   : (String) -> Unit = {},
+    onEditActivity  : (String, String) -> Unit = { _, _ -> },
+    onGalleryClick  : (String) -> Unit = {},
+    onTripChanged   : (String) -> Unit = {}
 ) {
-    var currentIndex   by remember { mutableIntStateOf(ALL_TRIP_IDS.indexOf(tripId).coerceAtLeast(0)) }
-    var slideDirection by remember { mutableIntStateOf(1) }
-    val currentTripId = ALL_TRIP_IDS[currentIndex]
+    val c = AppTheme.colors
+    val trips by viewModel.trips.collectAsState()
+    val tripIds = trips.map { it.id }
 
-    // Notify NavGraph whenever the active trip changes (keeps bottom bar gallery in sync)
-    LaunchedEffect(currentTripId) { onTripChanged(currentTripId) }
+    var currentIndex by remember(tripIds, tripId) {
+        mutableIntStateOf(tripIds.indexOf(tripId).coerceAtLeast(0))
+    }
+    var slideDirection by remember { mutableIntStateOf(1) }
+
+    val currentTripId = tripIds.getOrNull(currentIndex) ?: tripId
+    val currentTrip = trips.find { it.id == currentTripId }
+
+    LaunchedEffect(currentTripId) {
+        onTripChanged(currentTripId)
+        viewModel.selectTrip(currentTripId)
+    }
 
     Scaffold(
-        containerColor = BgBase,
+        containerColor = c.bgBase,
         topBar = {
             TripDetailTopBar(
-                title          = TripDetailData.forId(currentTripId).title,
-                currentTripId  = currentTripId,
-                onBack         = onBack,
-                onGalleryClick = onGalleryClick,
-                currentIndex   = currentIndex,
-                totalTrips     = ALL_TRIP_IDS.size,
-                onPrev         = { slideDirection = -1; currentIndex-- },
-                onNext         = { slideDirection =  1; currentIndex++ }
+                title        = currentTrip?.title ?: "Trip",
+                onBack       = onBack,
+                onEditTrip   = { onEditTrip(currentTripId) },
+                currentIndex = currentIndex,
+                totalTrips   = tripIds.size,
+                onPrev       = { if (currentIndex > 0) { slideDirection = -1; currentIndex-- } },
+                onNext       = { if (currentIndex < tripIds.size - 1) { slideDirection = 1; currentIndex++ } }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick        = { onAddActivity(currentTripId) },
+                shape          = RoundedCornerShape(16.dp),
+                containerColor = c.emerald,
+                contentColor   = c.snow
+            ) {
+                Icon(Icons.Rounded.Add, contentDescription = "Add activity")
+            }
         }
     ) { innerPadding ->
-        // Slide animation when switching between trips
-        AnimatedContent(
-            targetState    = currentTripId,
-            transitionSpec = {
-                if (slideDirection > 0) {
-                    (slideInHorizontally(tween(280)) { it } + fadeIn(tween(280)))
-                        .togetherWith(slideOutHorizontally(tween(280)) { -it } + fadeOut(tween(280)))
-                } else {
-                    (slideInHorizontally(tween(280)) { -it } + fadeIn(tween(280)))
-                        .togetherWith(slideOutHorizontally(tween(280)) { it } + fadeOut(tween(280)))
+        if (currentTrip != null) {
+            AnimatedContent(
+                targetState    = currentTripId,
+                transitionSpec = {
+                    if (slideDirection > 0) {
+                        (slideInHorizontally(tween(280)) { it } + fadeIn(tween(280)))
+                            .togetherWith(slideOutHorizontally(tween(280)) { -it } + fadeOut(tween(280)))
+                    } else {
+                        (slideInHorizontally(tween(280)) { -it } + fadeIn(tween(280)))
+                            .togetherWith(slideOutHorizontally(tween(280)) { it } + fadeOut(tween(280)))
+                    }
+                },
+                label    = "trip_slide",
+                modifier = Modifier.padding(innerPadding)
+            ) { animTripId ->
+                val animTrip = trips.find { it.id == animTripId }
+                if (animTrip != null) {
+                    TripDetailContent(
+                        trip            = animTrip,
+                        onEditActivity  = { actId -> onEditActivity(animTripId, actId) },
+                        onDeleteActivity = { actId -> viewModel.deleteActivity(animTripId, actId) }
+                    )
                 }
-            },
-            label    = "trip_slide",
-            modifier = Modifier.padding(innerPadding)
-        ) { animTripId ->
-            TripDetailContent(
-                trip           = remember(animTripId) { TripDetailData.forId(animTripId) },
-                onGalleryClick = { onGalleryClick(animTripId) }
-            )
+            }
+        } else {
+            Box(
+                modifier = Modifier.fillMaxSize().padding(innerPadding),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("No trip found", color = c.fog)
+            }
         }
     }
 }
 
-// ─── Top bar with prev/next arrows and gallery button ────────────────────────
+// ─── Top bar with prev/next arrows and edit button ───────────────────────────
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TripDetailTopBar(
-    title         : String,
-    currentTripId : String,
-    onBack        : () -> Unit,
-    onGalleryClick: (String) -> Unit,
-    currentIndex  : Int,
-    totalTrips    : Int,
-    onPrev        : () -> Unit,
-    onNext        : () -> Unit
+    title       : String,
+    onBack      : () -> Unit,
+    onEditTrip  : () -> Unit,
+    currentIndex: Int,
+    totalTrips  : Int,
+    onPrev      : () -> Unit,
+    onNext      : () -> Unit
 ) {
+    val c = AppTheme.colors
     TopAppBar(
         title = {
-            // Centered title + pagination dots
             Column(
                 modifier            = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -106,7 +150,7 @@ private fun TripDetailTopBar(
                 Text(
                     text       = title,
                     style      = MaterialTheme.typography.titleMedium,
-                    color      = Snow,
+                    color      = c.snow,
                     fontWeight = FontWeight.Bold,
                     maxLines   = 1
                 )
@@ -117,41 +161,39 @@ private fun TripDetailTopBar(
                             modifier = Modifier
                                 .size(if (index == currentIndex) 8.dp else 5.dp)
                                 .clip(CircleShape)
-                                .background(if (index == currentIndex) EmeraldLight else Fog)
+                                .background(if (index == currentIndex) c.emeraldLight else c.fog)
                         )
                     }
                 }
             }
         },
         navigationIcon = {
-            // Left side: back (gray) + previous trip (green)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", tint = Fog)
+                    Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", tint = c.fog)
                 }
                 IconButton(onClick = onPrev, enabled = currentIndex > 0) {
                     Icon(
                         Icons.AutoMirrored.Rounded.ArrowBack,
                         contentDescription = "Previous trip",
-                        tint = if (currentIndex > 0) EmeraldLight else BgOutline
+                        tint = if (currentIndex > 0) c.emeraldLight else c.bgOutline
                     )
                 }
             }
         },
         actions = {
-            // Right side: next trip (green) + gallery
             IconButton(onClick = onNext, enabled = currentIndex < totalTrips - 1) {
                 Icon(
                     Icons.AutoMirrored.Rounded.ArrowForward,
                     contentDescription = "Next trip",
-                    tint = if (currentIndex < totalTrips - 1) EmeraldLight else BgOutline
+                    tint = if (currentIndex < totalTrips - 1) c.emeraldLight else c.bgOutline
                 )
             }
-            IconButton(onClick = { onGalleryClick(currentTripId) }) {
-                Icon(Icons.Rounded.List, contentDescription = "Gallery", tint = Snow)
+            IconButton(onClick = onEditTrip) {
+                Icon(Icons.Rounded.Edit, contentDescription = "Edit trip", tint = c.violetLight)
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = BgBase)
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = c.bgBase)
     )
 }
 
@@ -159,19 +201,22 @@ private fun TripDetailTopBar(
 
 @Composable
 private fun TripDetailContent(
-    trip          : TripDetailModel,
-    onGalleryClick: () -> Unit
+    trip            : Trip,
+    onEditActivity  : (String) -> Unit,
+    onDeleteActivity: (String) -> Unit
 ) {
+    val c = AppTheme.colors
     var selectedTab by remember { mutableIntStateOf(0) }
     val tabs = listOf(
         stringResource(R.string.detail_tab_itinerary),
         stringResource(R.string.detail_tab_budget),
         stringResource(R.string.detail_tab_notes)
     )
+    val dateFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
     LazyColumn(
         modifier       = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(bottom = 32.dp)
+        contentPadding = PaddingValues(bottom = 80.dp)
     ) {
         item { TripHero(trip = trip) }
 
@@ -184,12 +229,12 @@ private fun TripDetailContent(
         item {
             TabRow(
                 selectedTabIndex = selectedTab,
-                containerColor   = CardSurface,
-                contentColor     = VioletLight,
+                containerColor   = c.cardSurface,
+                contentColor     = c.violetLight,
                 indicator        = { tabPositions ->
                     TabRowDefaults.SecondaryIndicator(
                         modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
-                        color    = VioletLight
+                        color    = c.violetLight
                     )
                 }
             ) {
@@ -200,7 +245,7 @@ private fun TripDetailContent(
                         text     = {
                             Text(text  = title,
                                 style = MaterialTheme.typography.labelLarge,
-                                color = if (selectedTab == index) VioletLight else Fog)
+                                color = if (selectedTab == index) c.violetLight else c.fog)
                         }
                     )
                 }
@@ -210,25 +255,33 @@ private fun TripDetailContent(
 
         when (selectedTab) {
             0 -> {
-                if (trip.days.isEmpty()) {
+                if (trip.activities.isEmpty()) {
                     item {
                         Box(
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
-                                .clip(RoundedCornerShape(16.dp)).background(CardSurface).padding(24.dp),
+                                .clip(RoundedCornerShape(16.dp)).background(c.cardSurface).padding(24.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("No itinerary planned yet.",
-                                style = MaterialTheme.typography.bodyMedium, color = Fog)
+                            Text("No activities yet. Tap + to add one!",
+                                style = MaterialTheme.typography.bodyMedium, color = c.fog)
                         }
                     }
                 } else {
-                    trip.days.forEach { day ->
+                    // Group activities by date
+                    val grouped = trip.activities.sortedWith(compareBy({ it.date }, { it.time }))
+                        .groupBy { it.date }
+
+                    grouped.forEach { (date, activities) ->
                         item {
-                            DayHeader(label = day.label)
+                            DayHeader(label = date.format(dateFmt))
                             Spacer(Modifier.height(8.dp))
                         }
-                        items(day.activities) { activity ->
-                            ActivityRow(activity = activity)
+                        items(activities, key = { it.id }) { activity ->
+                            ActivityRow(
+                                activity = activity,
+                                onEdit   = { onEditActivity(activity.id) },
+                                onDelete = { onDeleteActivity(activity.id) }
+                            )
                             Spacer(Modifier.height(8.dp))
                         }
                         item { Spacer(Modifier.height(12.dp)) }
@@ -241,222 +294,174 @@ private fun TripDetailContent(
     }
 }
 
-// ─── Hero banner with cover emoji and destination ────────────────────────────
+// ─── Hero banner ─────────────────────────────────────────────────────────────
 
 @Composable
-private fun TripHero(trip: TripDetailModel) {
+private fun TripHero(trip: Trip) {
+    val c = AppTheme.colors
     Box(
         modifier = Modifier.fillMaxWidth().height(180.dp)
-            .background(Brush.linearGradient(listOf(GradStart, GradMid, GradEnd))),
+            .background(Brush.linearGradient(listOf(c.gradStart, c.gradMid, c.gradEnd))),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(trip.coverEmoji, fontSize = 52.sp)
+            Text("✈️", fontSize = 52.sp)
             Spacer(Modifier.height(8.dp))
-            Text(trip.destination,
-                style = MaterialTheme.typography.bodyMedium, color = Snow.copy(alpha = 0.8f))
+            Text(trip.destination.ifEmpty { trip.title },
+                style = MaterialTheme.typography.bodyMedium, color = c.snow.copy(alpha = 0.8f))
+            Spacer(Modifier.height(4.dp))
+            val dateFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+            Text("${trip.startDate.format(dateFmt)} – ${trip.endDate.format(dateFmt)}",
+                style = MaterialTheme.typography.bodySmall, color = c.snow.copy(alpha = 0.6f))
         }
     }
 }
 
-// ─── Stats row: nights, budget, activity count ────────────────────────────────
+// ─── Stats row ───────────────────────────────────────────────────────────────
 
 @Composable
-private fun TripStatsRow(trip: TripDetailModel) {
-    val labelNights     = stringResource(R.string.detail_stat_nights)
-    val labelBudget     = stringResource(R.string.detail_stat_budget)
-    val labelActivities = stringResource(R.string.detail_stat_activities)
+private fun TripStatsRow(trip: Trip) {
+    val c = AppTheme.colors
+    val nights = trip.getDurationInDays()
 
     Row(
         modifier              = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
-            .clip(RoundedCornerShape(16.dp)).background(CardSurface).padding(vertical = 16.dp),
+            .clip(RoundedCornerShape(16.dp)).background(c.cardSurface).padding(vertical = 16.dp),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment     = Alignment.CenterVertically
     ) {
-        DetailStatChip("${trip.nights}",            labelNights)
-        Box(Modifier.width(1.dp).height(32.dp).background(BgOutline))
-        DetailStatChip("€${trip.budget}",           labelBudget)
-        Box(Modifier.width(1.dp).height(32.dp).background(BgOutline))
-        DetailStatChip("${trip.totalActivities()}", labelActivities)
+        DetailStatChip("$nights", stringResource(R.string.detail_stat_nights))
+        Box(Modifier.width(1.dp).height(32.dp).background(c.bgOutline))
+        DetailStatChip("€${trip.budget.toInt()}", stringResource(R.string.detail_stat_budget))
+        Box(Modifier.width(1.dp).height(32.dp).background(c.bgOutline))
+        DetailStatChip("${trip.activities.size}", stringResource(R.string.detail_stat_activities))
     }
 }
 
 @Composable
 private fun DetailStatChip(value: String, label: String) {
+    val c = AppTheme.colors
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(value, style = MaterialTheme.typography.headlineMedium,
-            color = Snow, fontWeight = FontWeight.ExtraBold)
-        Text(label, style = MaterialTheme.typography.labelSmall, color = Fog)
+            color = c.snow, fontWeight = FontWeight.ExtraBold)
+        Text(label, style = MaterialTheme.typography.labelSmall, color = c.fog)
     }
 }
 
-// ─── Day section header ───────────────────────────────────────────────────────
+// ─── Day section header ──────────────────────────────────────────────────────
 
 @Composable
 private fun DayHeader(label: String) {
-    Text(label, style = MaterialTheme.typography.labelLarge, color = VioletLight,
+    val c = AppTheme.colors
+    Text(label, style = MaterialTheme.typography.labelLarge, color = c.violetLight,
         modifier = Modifier.padding(horizontal = 24.dp))
 }
 
-// ─── Single activity row ──────────────────────────────────────────────────────
+// ─── Single activity row with edit/delete ────────────────────────────────────
 
 @Composable
-private fun ActivityRow(activity: ActivityModel) {
+private fun ActivityRow(
+    activity: Activity,
+    onEdit  : () -> Unit,
+    onDelete: () -> Unit
+) {
+    val c = AppTheme.colors
+    val emoji = when (activity.type) {
+        ActivityType.FLIGHT    -> "✈️"
+        ActivityType.HOTEL     -> "🏨"
+        ActivityType.FOOD      -> "🍱"
+        ActivityType.TRANSPORT -> "🚄"
+        ActivityType.VISIT     -> "⛩️"
+        ActivityType.OTHER     -> "📌"
+    }
+
     Row(
         modifier          = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
-            .clip(RoundedCornerShape(14.dp)).background(CardSurface)
+            .clip(RoundedCornerShape(14.dp)).background(c.cardSurface)
+            .clickable(onClick = onEdit)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(activity.emoji, fontSize = 24.sp)
+        Text(emoji, fontSize = 24.sp)
         Spacer(Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(activity.title, style = MaterialTheme.typography.titleMedium, color = Snow)
-            Text(activity.desc,  style = MaterialTheme.typography.bodySmall,   color = Fog)
+            Text(activity.title, style = MaterialTheme.typography.titleMedium, color = c.snow)
+            if (activity.description.isNotEmpty()) {
+                Text(activity.description, style = MaterialTheme.typography.bodySmall, color = c.fog)
+            }
         }
         Spacer(Modifier.width(8.dp))
         Column(horizontalAlignment = Alignment.End) {
-            Text(activity.time, style = MaterialTheme.typography.labelSmall, color = Fog)
+            Text(activity.time.toString(), style = MaterialTheme.typography.labelSmall, color = c.fog)
             Spacer(Modifier.height(4.dp))
-            if (activity.cost == 0) {
+            if (activity.cost == 0.0) {
                 Box(modifier = Modifier.clip(RoundedCornerShape(6.dp))
-                    .background(Emerald.copy(alpha = 0.15f))
+                    .background(c.emerald.copy(alpha = 0.15f))
                     .padding(horizontal = 8.dp, vertical = 2.dp)) {
-                    Text("FREE", style = MaterialTheme.typography.labelSmall, color = Emerald)
+                    Text("FREE", style = MaterialTheme.typography.labelSmall, color = c.emerald)
                 }
             } else {
-                Text("€${activity.cost}", style = MaterialTheme.typography.labelLarge,
-                    color = VioletLight, fontWeight = FontWeight.Bold)
+                Text("€${activity.cost.toInt()}", style = MaterialTheme.typography.labelLarge,
+                    color = c.violetLight, fontWeight = FontWeight.Bold)
             }
+        }
+        Spacer(Modifier.width(8.dp))
+        IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
+            Icon(Icons.Rounded.Delete, contentDescription = "Delete", tint = c.rose, modifier = Modifier.size(18.dp))
         }
     }
 }
 
-// ─── Budget tab: total, spent, remaining + progress bar ───────────────────────
+// ─── Budget tab ──────────────────────────────────────────────────────────────
 
 @Composable
-private fun BudgetTab(trip: TripDetailModel) {
-    val spent     = trip.days.flatMap { it.activities }.sumOf { it.cost }
+private fun BudgetTab(trip: Trip) {
+    val c = AppTheme.colors
+    val spent     = trip.activities.sumOf { it.cost }
     val remaining = trip.budget - spent
-    val progress  = if (trip.budget > 0) (spent.toFloat() / trip.budget).coerceIn(0f, 1f) else 0f
+    val progress  = if (trip.budget > 0) (spent / trip.budget).toFloat().coerceIn(0f, 1f) else 0f
 
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)) {
-        BudgetRow(stringResource(R.string.detail_budget_total),     "€${trip.budget}", Snow)
+        BudgetRow(stringResource(R.string.detail_budget_total),     "€${trip.budget.toInt()}", c.snow)
         Spacer(Modifier.height(8.dp))
-        BudgetRow(stringResource(R.string.detail_budget_spent),     "€$spent",         Amber)
+        BudgetRow(stringResource(R.string.detail_budget_spent),     "€${spent.toInt()}",       c.amber)
         Spacer(Modifier.height(8.dp))
-        BudgetRow(stringResource(R.string.detail_budget_remaining), "€$remaining",     Emerald)
+        BudgetRow(stringResource(R.string.detail_budget_remaining), "€${remaining.toInt()}",   c.emerald)
         Spacer(Modifier.height(16.dp))
         LinearProgressIndicator(
-            progress   = progress,
+            progress   = { progress },
             modifier   = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
-            color      = VioletLight,
-            trackColor = BgOutline
+            color      = c.violetLight,
+            trackColor = c.bgOutline
         )
         Spacer(Modifier.height(4.dp))
         Text("${(progress * 100).toInt()}% spent",
-            style = MaterialTheme.typography.bodySmall, color = Fog)
+            style = MaterialTheme.typography.bodySmall, color = c.fog)
     }
 }
 
 @Composable
 private fun BudgetRow(label: String, value: String, valueColor: androidx.compose.ui.graphics.Color) {
+    val c = AppTheme.colors
     Row(
         modifier              = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp))
-            .background(CardSurface).padding(horizontal = 16.dp, vertical = 14.dp),
+            .background(c.cardSurface).padding(horizontal = 16.dp, vertical = 14.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment     = Alignment.CenterVertically
     ) {
-        Text(label, style = MaterialTheme.typography.bodyMedium,  color = Mist)
+        Text(label, style = MaterialTheme.typography.bodyMedium,  color = c.mist)
         Text(value, style = MaterialTheme.typography.titleMedium, color = valueColor, fontWeight = FontWeight.Bold)
     }
 }
 
-// ─── Notes tab ────────────────────────────────────────────────────────────────
+// ─── Notes tab ───────────────────────────────────────────────────────────────
 
 @Composable
 private fun NotesTab(notes: String) {
+    val c = AppTheme.colors
     Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
-        .clip(RoundedCornerShape(16.dp)).background(CardSurface).padding(20.dp)) {
+        .clip(RoundedCornerShape(16.dp)).background(c.cardSurface).padding(20.dp)) {
         Text(notes.ifEmpty { "—" }, style = MaterialTheme.typography.bodyMedium,
-            color = if (notes.isEmpty()) Fog else Mist)
-    }
-}
-
-// ─── Data models ──────────────────────────────────────────────────────────────
-
-data class ActivityModel(val emoji: String, val time: String, val title: String, val desc: String, val cost: Int)
-data class DayModel(val label: String, val activities: List<ActivityModel>)
-data class TripDetailModel(
-    val id        : String,
-    val title     : String,
-    val destination: String,
-    val coverEmoji: String,
-    val nights    : Int,
-    val budget    : Int,
-    val notes     : String,
-    val days      : List<DayModel>
-) {
-    fun totalActivities() = days.sumOf { it.activities.size }
-}
-
-// ─── Mock data source — replace with repository when data layer is ready ──────
-
-object TripDetailData {
-    fun forId(id: String): TripDetailModel = when (id) {
-        "trip_kyoto" -> TripDetailModel(
-            id          = "trip_kyoto",
-            title       = "Kyoto Escape",
-            destination = "Kyoto, Japan",
-            coverEmoji  = "⛩️",
-            nights      = 9,
-            budget      = 1560,
-            notes       = "Book Arashiyama bamboo grove early morning to avoid crowds. Get an IC Card at the airport. Try kaiseki dinner at Nakamura.",
-            days = listOf(
-                DayModel("DAY 1 · JUN 3", listOf(
-                    ActivityModel("✈️", "09:15", "Flight BCN → KIX",        "Iberia IB6845 · Terminal 1",      480),
-                    ActivityModel("🏨", "21:00", "Check-in Gion Ryokan",    "Gion district · Traditional inn", 110)
-                )),
-                DayModel("DAY 2 · JUN 4", listOf(
-                    ActivityModel("🎋", "07:00", "Arashiyama Bamboo Grove", "Early visit · 1h walk",             0),
-                    ActivityModel("🍵", "11:00", "Tea Ceremony",            "Urasenke school · 2h",             45),
-                    ActivityModel("⛩️", "15:00", "Fushimi Inari Shrine",    "Thousand torii gates",              0)
-                )),
-                DayModel("DAY 3 · JUN 5", listOf(
-                    ActivityModel("🏯", "10:00", "Nijo Castle",    "UNESCO World Heritage site", 15),
-                    ActivityModel("🍱", "19:00", "Kaiseki dinner", "Nakamura · Reserve ahead",   85)
-                ))
-            )
-        )
-        "trip_morocco" -> TripDetailModel(
-            id          = "trip_morocco",
-            title       = "Moroccan Dream",
-            destination = "Marrakech, Morocco",
-            coverEmoji  = "🕌",
-            nights      = 6,
-            budget      = 980,
-            notes       = "Bargain at the souks — start at 30% of the asking price. Book a desert excursion in advance. Avoid tap water.",
-            days = listOf(
-                DayModel("DAY 1 · SEP 14", listOf(
-                    ActivityModel("✈️", "06:30", "Flight BCN → RAK", "Ryanair FR2241",        95),
-                    ActivityModel("🏨", "11:00", "Riad Yasmine",     "Medina · Rooftop pool", 75)
-                )),
-                DayModel("DAY 2 · SEP 15", listOf(
-                    ActivityModel("🏺", "09:00", "Medina Souks",           "Spices, crafts & textiles",        0),
-                    ActivityModel("🍊", "13:00", "Lunch at Djemaa el-Fna", "Street food · Fresh orange juice", 12),
-                    ActivityModel("🌅", "17:00", "Majorelle Garden",        "Yves Saint Laurent garden",       15)
-                ))
-            )
-        )
-        else -> TripDetailModel(
-            id          = "trip_iceland",
-            title       = "Iceland Aurora",
-            destination = "Reykjavik, Iceland",
-            coverEmoji  = "🌌",
-            nights      = 5,
-            budget      = 1800,
-            notes       = "",
-            days        = emptyList()
-        )
+            color = if (notes.isEmpty()) c.fog else c.mist)
     }
 }
