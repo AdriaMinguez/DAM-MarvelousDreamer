@@ -6,8 +6,8 @@
     ═══════════════════════════════════════════════════════════════════════════ -->
     <string name="app_name">Marvelous Dreamer</string>
     <string name="app_tagline">Where imagination meets technology</string>
-    <string name="app_version">1.0.0</string>
-    <string name="app_sprint">Sprint 01</string>
+    <string name="app_version">2.0.0</string>
+    <string name="app_sprint">Sprint 02</string>
     <string name="app_min_api">API 26 (Android 8.0)</string>
     <string name="app_kotlin_version">2.0.0</string>
     <string name="app_license">MIT</string>
@@ -201,6 +201,9 @@
     ═══════════════════════════════════════════════════════════════════════════ -->
     <string name="prefs_title">Preferences</string>
     <string name="prefs_subtitle">Customize your Marvelous Dreamer experience</string>
+    <string name="prefs_section_account">👤 ACCOUNT</string>
+    <string name="prefs_username_label">Username</string>
+    <string name="prefs_dob_label">Date of birth</string>
     <string name="prefs_section_language">🌐 LANGUAGE &amp; REGION</string>
     <string name="prefs_section_appearance">🎨 APPEARANCE</string>
     <string name="prefs_section_notifications">🔔 NOTIFICATIONS</string>
@@ -228,19 +231,15 @@
 
     <!-- Preference option arrays -->
     <string-array name="languages">
-        <item>🇬🇧 English</item>
-        <item>🇪🇸 Español</item>
-        <item>🇨🇦 Català</item>
-        <item>🇫🇷 Français</item>
-        <item>🇩🇪 Deutsch</item>
+        <item>Català</item>
+        <item>English</item>
+        <item>Español</item>
     </string-array>
 
     <string-array name="currencies">
         <item>EUR (€)</item>
         <item>USD ($)</item>
         <item>GBP (£)</item>
-        <item>JPY (¥)</item>
-        <item>CHF (Fr)</item>
     </string-array>
 
     <string-array name="date_formats">

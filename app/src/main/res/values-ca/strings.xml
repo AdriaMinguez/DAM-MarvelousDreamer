@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App -->
+    <string name="app_name">Marvelous Dreamer</string>
+    <string name="app_tagline">On la imaginació troba la tecnologia</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_home">Inici</string>
+    <string name="nav_trips">Viatges</string>
+    <string name="nav_gallery">Galeria</string>
+    <string name="nav_settings">Ajustos</string>
+
+    <!-- Home -->
+    <string name="home_greeting">Bon dia, 👋</string>
+    <string name="home_upcoming">Propers viatges</string>
+    <string name="home_see_all">Veure tots →</string>
+    <string name="home_section_upcoming">Propers viatges</string>
+    <string name="home_section_see_all">Veure tots →</string>
+    <string name="home_stat_trips">Viatges</string>
+    <string name="home_stat_budget">Pressupost</string>
+    <string name="home_stat_nights">Nits</string>
+
+    <!-- Trip -->
+    <string name="trip_nights">nits</string>
+    <string name="trip_budget">Pressupost</string>
+    <string name="trip_activities">Activitats</string>
+    <string name="trip_tab_itinerary">Itinerari</string>
+    <string name="trip_tab_budget">Pressupost</string>
+    <string name="trip_tab_notes">Notes</string>
+
+    <!-- Add/Edit Trip -->
+    <string name="add_trip">Nou viatge</string>
+    <string name="edit_trip">Editar viatge</string>
+    <string name="trip_title_label">Títol *</string>
+    <string name="trip_description_label">Descripció</string>
+    <string name="trip_destination_label">Destinació</string>
+    <string name="trip_start_date_label">Data d\'inici *</string>
+    <string name="trip_end_date_label">Data de fi *</string>
+    <string name="trip_budget_label">Pressupost (€)</string>
+    <string name="trip_save">Desar viatge</string>
+    <string name="trip_create">Crear viatge</string>
+    <string name="trip_delete">Eliminar viatge</string>
+
+    <!-- Add/Edit Activity -->
+    <string name="add_activity">Nova activitat</string>
+    <string name="edit_activity">Editar activitat</string>
+    <string name="activity_title_label">Títol *</string>
+    <string name="activity_description_label">Descripció</string>
+    <string name="activity_date_label">Data *</string>
+    <string name="activity_time_label">Hora *</string>
+    <string name="activity_location_label">Lloc</string>
+    <string name="activity_cost_label">Cost (€)</string>
+    <string name="activity_type_label">Tipus</string>
+    <string name="activity_save">Desar activitat</string>
+    <string name="activity_create">Afegir activitat</string>
+    <string name="activity_delete">Eliminar activitat</string>
+
+    <!-- Validation errors -->
+    <string name="error_field_required">Aquest camp és obligatori</string>
+    <string name="error_date_select_start">Selecciona una data d\'inici</string>
+    <string name="error_date_select_end">Selecciona una data de fi</string>
+    <string name="error_date_order">La data de fi ha de ser posterior a la d\'inici</string>
+    <string name="error_date_outside_range">La data ha d\'estar dins del rang del viatge</string>
+    <string name="error_time_required">Selecciona una hora</string>
+
+    <!-- Common actions -->
+    <string name="action_save">Desar</string>
+    <string name="action_cancel">Cancel·lar</string>
+    <string name="action_delete">Eliminar</string>
+    <string name="action_back">Enrere</string>
+    <string name="action_ok">D\'acord</string>
+    <string name="select_date">Selecciona data</string>
+    <string name="select_time">Selecciona hora</string>
+
+    <!-- Preferences -->
+    <string name="prefs_title">Preferències</string>
+    <string name="prefs_subtitle">Personalitza la teva experiència</string>
+    <string name="prefs_section_account">👤 COMPTE</string>
+    <string name="prefs_username_label">Nom d\'usuari</string>
+    <string name="prefs_dob_label">Data de naixement</string>
+    <string name="prefs_section_language">🌐 IDIOMA I REGIÓ</string>
+    <string name="prefs_language_label">Idioma</string>
+    <string name="prefs_language_subtitle">Idioma de la interfície</string>
+    <string name="prefs_currency_label">Moneda</string>
+    <string name="prefs_currency_subtitle">Per als pressupostos</string>
+    <string name="prefs_dateformat_label">Format de data</string>
+    <string name="prefs_section_appearance">🎨 APARENÇA</string>
+    <string name="prefs_darkmode_label">Mode fosc</string>
+    <string name="prefs_darkmode_subtitle">Tema de l\'aplicació</string>
+    <string name="prefs_textsize_label">Mida del text</string>
+    <string name="prefs_textsize_subtitle">Ajust d\'accessibilitat</string>
+    <string name="prefs_section_notifications">🔔 NOTIFICACIONS</string>
+    <string name="prefs_notif_reminders_label">Recordatoris de viatge</string>
+    <string name="prefs_notif_reminders_subtitle">Avís 24h abans del vol</string>
+    <string name="prefs_notif_weekly_label">Resum setmanal</string>
+    <string name="prefs_notif_weekly_subtitle">Email amb propers viatges</string>
+    <string name="prefs_notif_ai_label">Suggeriments IA</string>
+    <string name="prefs_notif_ai_subtitle">Recomanacions personalitzades</string>
+
+    <!-- Trip Detail -->
+    <string name="detail_tab_itinerary">Itinerari</string>
+    <string name="detail_tab_budget">Pressupost</string>
+    <string name="detail_tab_notes">Notes</string>
+    <string name="detail_stat_nights">NITS</string>
+    <string name="detail_stat_budget">PRESSUPOST</string>
+    <string name="detail_stat_activities">ACTIVITATS</string>
+    <string name="detail_budget_total">Pressupost total</string>
+    <string name="detail_budget_spent">Gastat</string>
+    <string name="detail_budget_remaining">Restant</string>
+
+    <!-- About -->
+    <string name="about_version">Versió</string>
+    <string name="about_sprint">Sprint</string>
+    <string name="about_developer">Desenvolupador</string>
+    <string name="about_tagline">Planifica les teves aventures, al teu estil.</string>
+
+    <!-- Terms -->
+    <string name="terms_title">Termes i Condicions</string>
+    <string name="terms_accept">✓ Acceptar i continuar</string>
+    <string name="terms_decline">Rebutjar</string>
+    <string name="terms_updated">Última actualització: 1 de març de 2025</string>
+    <string name="terms1_title">1. 📋 Acceptació dels termes</string>
+    <string name="terms1_body">En utilitzar Marvelous Dreamer acceptes aquests termes i condicions. Si no hi estàs d\'acord, no has d\'utilitzar l\'aplicació.</string>
+    <string name="terms2_title">2. 🔒 Privacitat i dades</string>
+    <string name="terms2_body">Marvelous Dreamer recull només les dades necessàries: nom d\'usuari, destinacions i itineraris guardats. No compartim les teves dades amb tercers sense el teu consentiment.</string>
+    <string name="terms3_title">3. ✈️ Ús de l\'aplicació</string>
+    <string name="terms3_body">Marvelous Dreamer és una eina de planificació personal. La informació mostrada és orientativa. Verifica sempre els detalls amb els proveïdors oficials.</string>
+    <string name="terms4_title">4. 🌐 Serveis de tercers</string>
+    <string name="terms4_body">L\'aplicació pot integrar serveis externs com Google Maps o APIs de vols. L\'ús d\'aquests serveis està subjecte a les seves pròpies polítiques.</string>
+    <string name="terms5_title">5. 📝 Modificacions</string>
+    <string name="terms5_body">Ens reservem el dret de modificar aquests termes en qualsevol moment. Els canvis tindran efecte en publicar la versió actualitzada.</string>
+
+    <!-- App Info -->
+    <string name="app_version">2.0.0</string>
+    <string name="app_sprint">Sprint 02</string>
+    <string name="app_min_api">API 26 (Android 8.0)</string>
+    <string name="app_kotlin_version">2.0.0</string>
+    <string name="app_license">MIT</string>
+    <string name="app_built_at">Fet amb ❤️ per Adrià Mínguez</string>
+    <string name="splash_loading">CARREGANT…</string>
+
+    <!-- User -->
+    <string name="user_name">Adrià</string>
+    <string name="user_email">adria@marvelousdreamer.com</string>
+
+    <!-- Gallery -->
+    <string name="gallery_filter_all">Tot</string>
+    <string name="gallery_filter_top">★ Top</string>
+    <string name="gallery_filter_video">Vídeo</string>
+    <string name="gallery_add_photo">Afegir foto</string>
+
+    <!-- About -->
+    <string name="about_section_team">👨‍💻 DESENVOLUPADOR</string>
+    <string name="about_section_tech">ℹ️ INFO TÈCNICA</string>
+    <string name="about_tech_version">Versió</string>
+    <string name="about_tech_sprint">Sprint</string>
+    <string name="about_tech_android">Android mínim</string>
+    <string name="about_tech_kotlin">Kotlin</string>
+    <string name="about_tech_license">Llicència</string>
+    <string name="team1_initials">AM</string>
+    <string name="team1_name">Adrià Mínguez</string>
+    <string name="team1_role">Desenvolupador · UI/UX · Android</string>
+
+    <!-- Arrays -->
+    <string-array name="languages">
+        <item>Català</item>
+        <item>English</item>
+        <item>Español</item>
+    </string-array>
+    <string-array name="currencies">
+        <item>EUR (€)</item>
+        <item>USD ($)</item>
+        <item>GBP (£)</item>
+    </string-array>
+    <string-array name="date_formats">
+        <item>DD/MM/AAAA</item>
+        <item>MM/DD/AAAA</item>
+        <item>AAAA-MM-DD</item>
+    </string-array>
+    <string-array name="text_sizes">
+        <item>Petit</item>
+        <item>Normal</item>
+        <item>Gran</item>
+    </string-array>
+</resources>
