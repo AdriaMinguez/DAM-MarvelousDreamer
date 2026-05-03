@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "399768417799",
+    "project_id": "marvelousdreamer",
+    "storage_bucket": "marvelousdreamer.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:399768417799:android:83497ad7d414c7b61edca2",
+        "android_client_info": {
+          "package_name": "com.example.marvelousdreamer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5As9Fn2JyiJh90agZS-yLCjjwv8CldNs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
