@@ -9,23 +9,19 @@ import androidx.navigation.compose.rememberNavController
 import com.example.marvelousdreamer.data.preferences.UserPreferencesManager
 import com.example.marvelousdreamer.ui.navigation.NavGraph
 import com.example.marvelousdreamer.ui.themes.MarvelousDreamerTheme
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
 
-/**
- * Main entry point — Sprint 02.
- * Loads saved preferences (dark mode + language) on startup (T1.4).
- */
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        // Load saved language preference and apply locale (T1.5)
         val prefsManager = UserPreferencesManager(this)
         applyLocale(prefsManager.language)
 
         setContent {
-            // Read dark mode preference (T1.4)
             var isDarkMode by remember { mutableStateOf(prefsManager.darkMode) }
 
             MarvelousDreamerTheme(darkTheme = isDarkMode) {
@@ -35,17 +31,13 @@ class MainActivity : ComponentActivity() {
                     onDarkModeChanged = { isDarkMode = it },
                     onLanguageChanged = { lang ->
                         applyLocale(lang)
-                        recreate() // Restart activity to apply new locale
+                        recreate()
                     }
                 )
             }
         }
     }
 
-    /**
-     * Applies the given language code ("en", "ca", "es") to the app's locale.
-     * This ensures the correct values-xx/strings.xml is used.
-     */
     private fun applyLocale(langCode: String) {
         val locale = Locale(langCode)
         Locale.setDefault(locale)
