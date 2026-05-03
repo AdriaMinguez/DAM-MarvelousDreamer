@@ -185,7 +185,7 @@ fun AddEditTripScreen(
 
             // Save button
             Button(
-                onClick = { if (viewModel.saveTrip()) onSaved() },
+                onClick = { viewModel.saveTrip { success -> if (success) onSaved() } },
                 modifier = Modifier.fillMaxWidth(),
                 shape    = RoundedCornerShape(14.dp),
                 colors   = ButtonDefaults.buttonColors(containerColor = c.violet)

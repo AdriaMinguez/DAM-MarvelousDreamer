@@ -15,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -23,34 +22,46 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.marvelousdreamer.R
-import com.example.marvelousdreamer.data.preferences.UserPreferencesManager
 import com.example.marvelousdreamer.domain.Trip
 import com.example.marvelousdreamer.ui.themes.*
+import com.example.marvelousdreamer.ui.viewmodel.AuthViewModel
 import com.example.marvelousdreamer.ui.viewmodel.TripViewModel
 import java.time.format.DateTimeFormatter
 
-/**
- * Home screen — Sprint 02: now reads trips from TripViewModel (T2.3).
- * Updates dynamically when trips are added/edited/deleted.
- */
 @Composable
 fun HomeScreen(
     viewModel      : TripViewModel,
+    authViewModel  : AuthViewModel? = null,
     onTripClick    : (String) -> Unit,
     onAddTripClick : () -> Unit = {},
     onSeeAllClick  : () -> Unit = {},
     onProfileClick : () -> Unit = {},
     onTermsClick   : () -> Unit = {},
     onAboutClick   : () -> Unit = {},
-    onSettingsClick: () -> Unit = {}
+    onSettingsClick: () -> Unit = {},
+    onLogout       : () -> Unit = {}
 ) {
     val c = AppTheme.colors
     val trips by viewModel.trips.collectAsState()
 
-    val context = LocalContext.current
-    val prefsManager = remember { UserPreferencesManager(context) }
+    // Read username from Room (AuthViewModel), fallback to string resource
     val defaultName = stringResource(R.string.user_name)
-    val userName = prefsManager.username.ifEmpty { defaultName }
+    var userName by remember { mutableStateOf(defaultName) }
+    var userEmail by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        val localUser = authViewModel?.getLocalUser()
+        if (localUser != null) {
+            userName = localUser.username.ifEmpty { defaultName }
+            userEmail = localUser.login
+        } else {
+            // Fallback to Firebase email
+            val fbEmail = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.email ?: ""
+            userEmail = fbEmail
+            userName = fbEmail.substringBefore("@").ifEmpty { defaultName }
+        }
+    }
+
     val greeting        = stringResource(R.string.home_greeting)
     val sectionUpcoming = stringResource(R.string.home_section_upcoming)
     val seeAll          = stringResource(R.string.home_section_see_all)
@@ -83,10 +94,12 @@ fun HomeScreen(
                 HomeHeader(
                     greeting        = greeting,
                     userName        = userName,
+                    userEmail       = userEmail,
                     onProfileClick  = onProfileClick,
                     onTermsClick    = onTermsClick,
                     onAboutClick    = onAboutClick,
-                    onSettingsClick = onSettingsClick
+                    onSettingsClick = onSettingsClick,
+                    onLogout        = onLogout
                 )
             }
             item {
@@ -135,14 +148,15 @@ fun HomeScreen(
 private fun HomeHeader(
     greeting       : String,
     userName       : String,
+    userEmail      : String = "",
     onProfileClick : () -> Unit = {},
     onTermsClick   : () -> Unit,
     onAboutClick   : () -> Unit,
-    onSettingsClick: () -> Unit
+    onSettingsClick: () -> Unit,
+    onLogout       : () -> Unit = {}
 ) {
     val c = AppTheme.colors
     var menuExpanded by remember { mutableStateOf(false) }
-    val userEmail = stringResource(R.string.user_email)
 
     Box(
         modifier = Modifier.fillMaxWidth().background(
@@ -214,6 +228,8 @@ private fun HomeHeader(
                     ProfileMenuItem(emoji = "ℹ️",  label = "About",              onClick = { menuExpanded = false; onAboutClick() })
                     HorizontalDivider(color = c.bgOutline, thickness = 0.5.dp)
                     ProfileMenuItem(emoji = "📄", label = "Terms & Conditions", onClick = { menuExpanded = false; onTermsClick() })
+                    HorizontalDivider(color = c.bgOutline, thickness = 0.5.dp)
+                    ProfileMenuItem(emoji = "🚪", label = "Logout", onClick = { menuExpanded = false; onLogout() })
                 }
             }
         }

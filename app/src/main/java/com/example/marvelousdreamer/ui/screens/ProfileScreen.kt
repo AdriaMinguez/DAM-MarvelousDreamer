@@ -18,36 +18,47 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.marvelousdreamer.R
 import com.example.marvelousdreamer.ui.themes.*
-
-// Mock trip entry — replace with domain model when data layer is ready
-private data class TripEntry(val emoji: String, val title: String, val dates: String, val id: String)
-
-private val MOCK_TRIPS = listOf(
-    TripEntry("⛩️", "Kyoto Escape",   "Jun 3 – Jun 12",  "trip_kyoto"),
-    TripEntry("🕌", "Moroccan Dream", "Sep 14 – Sep 20", "trip_morocco"),
-    TripEntry("🌌", "Iceland Aurora", "Nov 20 – Nov 25", "trip_iceland")
-)
-
-private const val MOCK_TOTAL_NIGHTS = 9 + 6 + 5
-private const val MOCK_TOTAL_BUDGET = 1560 + 980 + 1800
-private const val MOCK_TOTAL_SPENT  = 720 + 410 + 0
+import com.example.marvelousdreamer.ui.viewmodel.AuthViewModel
+import com.example.marvelousdreamer.ui.viewmodel.TripViewModel
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun ProfileScreen(
     onBack         : () -> Unit,
     onSettingsClick: () -> Unit = {},
-    onTripClick    : (String) -> Unit = {}
+    onTripClick    : (String) -> Unit = {},
+    onEditProfile  : () -> Unit = {},
+    onLogout       : () -> Unit = {},
+    viewModel      : TripViewModel? = null,
+    authViewModel  : AuthViewModel? = null
 ) {
     val c = AppTheme.colors
-    val userName  = stringResource(R.string.user_name)
-    val userEmail = stringResource(R.string.user_email)
+
+    // Read user data from Room
+    var userName by remember { mutableStateOf("") }
+    var userEmail by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        val localUser = authViewModel?.getLocalUser()
+        if (localUser != null) {
+            userName = localUser.username
+            userEmail = localUser.login
+        } else {
+            val fb = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+            userEmail = fb?.email ?: ""
+            userName = userEmail.substringBefore("@")
+        }
+    }
+
+    val trips = viewModel?.trips?.collectAsState()?.value ?: emptyList()
+    val totalNights = trips.sumOf { it.getDurationInDays() }
+    val totalBudget = trips.sumOf { it.budget.toInt() }
+    val totalSpent = trips.sumOf { trip -> trip.activities.sumOf { it.cost }.toInt() }
 
     Scaffold(
         containerColor = c.bgBase,
@@ -59,7 +70,6 @@ fun ProfileScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // Avatar, name, email and explorer badge
             item {
                 Spacer(Modifier.height(28.dp))
                 Box(
@@ -71,7 +81,7 @@ fun ProfileScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text       = userName.first().uppercase(),
+                        text       = if (userName.isNotEmpty()) userName.first().uppercase() else "?",
                         fontSize   = 38.sp,
                         color      = c.snow,
                         fontWeight = FontWeight.ExtraBold
@@ -79,7 +89,7 @@ fun ProfileScreen(
                 }
                 Spacer(Modifier.height(14.dp))
                 Text(
-                    text       = userName,
+                    text       = userName.ifEmpty { "User" },
                     style      = MaterialTheme.typography.headlineMedium,
                     color      = c.snow,
                     fontWeight = FontWeight.ExtraBold,
@@ -106,7 +116,6 @@ fun ProfileScreen(
                 Spacer(Modifier.height(28.dp))
             }
 
-            // Summary stats: trips, nights, total budget
             item {
                 Row(
                     modifier              = Modifier
@@ -119,18 +128,17 @@ fun ProfileScreen(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment     = Alignment.CenterVertically
                 ) {
-                    ProfileStatChip("${MOCK_TRIPS.size}", "TRIPS")
+                    ProfileStatChip("${trips.size}", "TRIPS")
                     Box(Modifier.width(1.dp).height(36.dp).background(c.bgOutline))
-                    ProfileStatChip("$MOCK_TOTAL_NIGHTS", "NIGHTS")
+                    ProfileStatChip("$totalNights", "NIGHTS")
                     Box(Modifier.width(1.dp).height(36.dp).background(c.bgOutline))
-                    ProfileStatChip("€$MOCK_TOTAL_BUDGET", "BUDGET")
+                    ProfileStatChip("€$totalBudget", "BUDGET")
                 }
                 Spacer(Modifier.height(24.dp))
             }
 
-            // Overall spending progress across all trips
             item {
-                val spendProgress = MOCK_TOTAL_SPENT.toFloat() / MOCK_TOTAL_BUDGET
+                val spendProgress = if (totalBudget > 0) totalSpent.toFloat() / totalBudget else 0f
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -145,7 +153,7 @@ fun ProfileScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text("Total spending", style = MaterialTheme.typography.bodyMedium, color = c.fog)
-                        Text("€$MOCK_TOTAL_SPENT / €$MOCK_TOTAL_BUDGET",
+                        Text("€$totalSpent / €$totalBudget",
                             style = MaterialTheme.typography.labelLarge,
                             color = c.violetLight, fontWeight = FontWeight.Bold)
                     }
@@ -166,7 +174,6 @@ fun ProfileScreen(
                 Spacer(Modifier.height(24.dp))
             }
 
-            // Trips list — each row navigates to the corresponding trip detail
             item {
                 ProfileSection(title = "🗺️  MY TRIPS")
                 Spacer(Modifier.height(12.dp))
@@ -177,40 +184,50 @@ fun ProfileScreen(
                         .clip(RoundedCornerShape(16.dp))
                         .background(c.cardSurface)
                 ) {
-                    MOCK_TRIPS.forEachIndexed { index, trip ->
-                        Row(
-                            modifier          = Modifier
-                                .fillMaxWidth()
-                                .clickable { onTripClick(trip.id) }
-                                .padding(horizontal = 16.dp, vertical = 14.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(44.dp)
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .background(Brush.linearGradient(listOf(c.gradStart, c.gradEnd))),
-                                contentAlignment = Alignment.Center
+                    if (trips.isEmpty()) {
+                        Text(
+                            "No trips yet",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = c.fog,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    } else {
+                        val dateFmt = DateTimeFormatter.ofPattern("dd/MM")
+                        trips.forEachIndexed { index, trip ->
+                            val dateRange = "${trip.startDate.format(dateFmt)} – ${trip.endDate.format(dateFmt)}"
+                            Row(
+                                modifier          = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { onTripClick(trip.id) }
+                                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(trip.emoji, fontSize = 20.sp)
+                                Box(
+                                    modifier = Modifier
+                                        .size(44.dp)
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(Brush.linearGradient(listOf(c.gradStart, c.gradEnd))),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text("✈️", fontSize = 20.sp)
+                                }
+                                Spacer(Modifier.width(14.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(trip.title, style = MaterialTheme.typography.titleMedium, color = c.snow)
+                                    Text(dateRange, style = MaterialTheme.typography.bodySmall, color = c.fog)
+                                }
+                                Icon(Icons.AutoMirrored.Rounded.ArrowForward, contentDescription = null,
+                                    tint = c.emeraldLight, modifier = Modifier.size(20.dp))
                             }
-                            Spacer(Modifier.width(14.dp))
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(trip.title, style = MaterialTheme.typography.titleMedium, color = c.snow)
-                                Text(trip.dates, style = MaterialTheme.typography.bodySmall,   color = c.fog)
+                            if (index < trips.lastIndex) {
+                                HorizontalDivider(color = c.bgOutline, thickness = 0.5.dp)
                             }
-                            Icon(Icons.AutoMirrored.Rounded.ArrowForward, contentDescription = null,
-                                tint = c.emeraldLight, modifier = Modifier.size(20.dp))
-                        }
-                        if (index < MOCK_TRIPS.lastIndex) {
-                            HorizontalDivider(color = c.bgOutline, thickness = 0.5.dp)
                         }
                     }
                 }
                 Spacer(Modifier.height(24.dp))
             }
 
-            // Account settings actions
             item {
                 ProfileSection(title = "⚙️  ACCOUNT")
                 Spacer(Modifier.height(12.dp))
@@ -221,20 +238,18 @@ fun ProfileScreen(
                         .clip(RoundedCornerShape(16.dp))
                         .background(c.cardSurface)
                 ) {
-                    ProfileActionRow(icon = Icons.Rounded.Person,        label = "Edit profile",       tint = c.violetLight)
+                    ProfileActionRow(icon = Icons.Rounded.Person, label = "Edit profile", tint = c.violetLight, onClick = onEditProfile)
                     HorizontalDivider(color = c.bgOutline, thickness = 0.5.dp)
-                    ProfileActionRow(icon = Icons.Rounded.Notifications,  label = "Notifications",      tint = c.violetLight, onClick = onSettingsClick)
+                    ProfileActionRow(icon = Icons.Rounded.Notifications, label = "Notifications", tint = c.violetLight, onClick = onSettingsClick)
                     HorizontalDivider(color = c.bgOutline, thickness = 0.5.dp)
-                    ProfileActionRow(icon = Icons.Rounded.Lock,           label = "Privacy & security", tint = c.violetLight)
+                    ProfileActionRow(icon = Icons.Rounded.Lock, label = "Privacy & security", tint = c.violetLight)
                     HorizontalDivider(color = c.bgOutline, thickness = 0.5.dp)
-                    ProfileActionRow(icon = Icons.Rounded.Close,          label = "Log out",            tint = c.rose)
+                    ProfileActionRow(icon = Icons.Rounded.Close, label = "Log out", tint = c.rose, onClick = onLogout)
                 }
             }
         }
     }
 }
-
-// ─── Top bar ──────────────────────────────────────────────────────────────────
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -254,8 +269,6 @@ private fun ProfileTopBar(onBack: () -> Unit) {
     )
 }
 
-// ─── Section label ────────────────────────────────────────────────────────────
-
 @Composable
 private fun ProfileSection(title: String) {
     val c = AppTheme.colors
@@ -263,8 +276,6 @@ private fun ProfileSection(title: String) {
         color = c.violetLight, fontWeight = FontWeight.Bold,
         modifier = Modifier.padding(horizontal = 24.dp))
 }
-
-// ─── Single stat chip (value + label) ────────────────────────────────────────
 
 @Composable
 private fun ProfileStatChip(value: String, label: String) {
@@ -275,8 +286,6 @@ private fun ProfileStatChip(value: String, label: String) {
         Text(label, style = MaterialTheme.typography.labelSmall, color = c.fog)
     }
 }
-
-// ─── Tappable account action row ─────────────────────────────────────────────
 
 @Composable
 private fun ProfileActionRow(

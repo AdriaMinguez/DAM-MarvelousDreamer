@@ -225,7 +225,7 @@ fun AddEditActivityScreen(
 
             // Save button
             Button(
-                onClick  = { if (viewModel.saveActivity(tripId)) onSaved() },
+                onClick  = { viewModel.saveActivity(tripId) { success -> if (success) onSaved() } },
                 modifier = Modifier.fillMaxWidth(),
                 shape    = RoundedCornerShape(14.dp),
                 colors   = ButtonDefaults.buttonColors(containerColor = c.violet)

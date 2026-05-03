@@ -48,8 +48,6 @@ fun PreferencesScreen(
     val textSizes   = stringArrayResource(R.array.text_sizes).toList()
 
     // ── Persisted state (loaded from SharedPreferences) ───────────────────────
-    var username    by remember { mutableStateOf(prefsManager.username) }
-    var dateOfBirth by remember { mutableStateOf(prefsManager.dateOfBirth) }
     var darkMode    by remember { mutableStateOf(prefsManager.darkMode) }
     val savedLang   = prefsManager.language
     var selectedLanguage by remember {
@@ -83,36 +81,6 @@ fun PreferencesScreen(
             item {
                 Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = c.fog)
                 Spacer(Modifier.height(8.dp))
-            }
-
-            // ── Secció: Compte ────────────────────────────────────────────
-            item { SectionLabel(stringResource(R.string.prefs_section_account)) }
-
-            // Username — persisted
-            item {
-                PrefsTextField(
-                    label        = stringResource(R.string.prefs_username_label),
-                    value        = username,
-                    onValueChange = {
-                        username = it
-                        prefsManager.username = it
-                    },
-                    placeholder  = "Adrià"
-                )
-            }
-
-            // Date of birth — persisted as text
-            item {
-                PrefsTextField(
-                    label        = stringResource(R.string.prefs_dob_label),
-                    value        = dateOfBirth,
-                    onValueChange = {
-                        dateOfBirth = it
-                        prefsManager.dateOfBirth = it
-                    },
-                    placeholder  = "dd/mm/aaaa",
-                    keyboardType = KeyboardType.Number
-                )
             }
 
             // ── Secció: Idioma i Regió ────────────────────────────────────
