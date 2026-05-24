@@ -33,6 +33,13 @@ import com.example.marvelousdreamer.domain.ActivityType
 import com.example.marvelousdreamer.domain.Trip
 import com.example.marvelousdreamer.ui.themes.*
 import com.example.marvelousdreamer.ui.viewmodel.TripViewModel
+import com.example.marvelousdreamer.ui.viewmodel.GalleryViewModel
+import android.net.Uri
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import java.time.format.DateTimeFormatter
 
 /**
@@ -49,6 +56,7 @@ fun TripDetailScreen(
     onAddActivity   : (String) -> Unit = {},
     onEditActivity  : (String, String) -> Unit = { _, _ -> },
     onGalleryClick  : (String) -> Unit = {},
+    galleryViewModel: GalleryViewModel? = null,
     onTripChanged   : (String) -> Unit = {}
 ) {
     val c = AppTheme.colors
@@ -75,6 +83,7 @@ fun TripDetailScreen(
                 title        = currentTrip?.title ?: "Trip",
                 onBack       = onBack,
                 onEditTrip   = { onEditTrip(currentTripId) },
+                onGalleryClick = { onGalleryClick(currentTripId) },
                 currentIndex = currentIndex,
                 totalTrips   = tripIds.size,
                 onPrev       = { if (currentIndex > 0) { slideDirection = -1; currentIndex-- } },
@@ -111,6 +120,7 @@ fun TripDetailScreen(
                 if (animTrip != null) {
                     TripDetailContent(
                         trip            = animTrip,
+                        galleryViewModel = galleryViewModel,
                         onEditActivity  = { actId -> onEditActivity(animTripId, actId) },
                         onDeleteActivity = { actId -> viewModel.deleteActivity(animTripId, actId) }
                     )
@@ -135,6 +145,7 @@ private fun TripDetailTopBar(
     title       : String,
     onBack      : () -> Unit,
     onEditTrip  : () -> Unit,
+    onGalleryClick: () -> Unit = {},
     currentIndex: Int,
     totalTrips  : Int,
     onPrev      : () -> Unit,
@@ -189,6 +200,9 @@ private fun TripDetailTopBar(
                     tint = if (currentIndex < totalTrips - 1) c.emeraldLight else c.bgOutline
                 )
             }
+            IconButton(onClick = onGalleryClick) {
+                Text("🖼️", fontSize = 18.sp)
+            }
             IconButton(onClick = onEditTrip) {
                 Icon(Icons.Rounded.Edit, contentDescription = "Edit trip", tint = c.violetLight)
             }
@@ -202,6 +216,7 @@ private fun TripDetailTopBar(
 @Composable
 private fun TripDetailContent(
     trip            : Trip,
+    galleryViewModel: GalleryViewModel? = null,
     onEditActivity  : (String) -> Unit,
     onDeleteActivity: (String) -> Unit
 ) {
@@ -210,7 +225,8 @@ private fun TripDetailContent(
     val tabs = listOf(
         stringResource(R.string.detail_tab_itinerary),
         stringResource(R.string.detail_tab_budget),
-        stringResource(R.string.detail_tab_notes)
+        stringResource(R.string.detail_tab_notes),
+        "Gallery"
     )
     val dateFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
@@ -290,6 +306,7 @@ private fun TripDetailContent(
             }
             1 -> item { BudgetTab(trip = trip) }
             2 -> item { NotesTab(notes = trip.notes) }
+            3 -> item { GalleryPreview(tripId = trip.id, galleryViewModel = galleryViewModel) }
         }
     }
 }
@@ -408,6 +425,57 @@ private fun ActivityRow(
         Spacer(Modifier.width(8.dp))
         IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
             Icon(Icons.Rounded.Delete, contentDescription = "Delete", tint = c.rose, modifier = Modifier.size(18.dp))
+        }
+    }
+}
+
+// ─── Gallery preview tab ──────────────────────────────────────────────────────
+
+@Composable
+private fun GalleryPreview(tripId: String, galleryViewModel: GalleryViewModel?) {
+    val c = AppTheme.colors
+    if (galleryViewModel == null) return
+
+    LaunchedEffect(tripId) { galleryViewModel.setTripId(tripId) }
+    val images by galleryViewModel.images.collectAsState()
+
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
+            .clip(RoundedCornerShape(16.dp)).background(c.cardSurface).padding(16.dp)
+    ) {
+        Text("${images.size} photos", style = MaterialTheme.typography.titleMedium,
+            color = c.snow, fontWeight = FontWeight.Bold)
+        if (images.isEmpty()) {
+            Spacer(Modifier.height(8.dp))
+            Text("No photos yet. Use the gallery icon to add some!",
+                style = MaterialTheme.typography.bodySmall, color = c.fog)
+        } else {
+            Spacer(Modifier.height(12.dp))
+            // Show up to 6 photos in a grid
+            val previewImages = images.take(6)
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                for (row in previewImages.chunked(3)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        for (uri in row) {
+                            AsyncImage(
+                                model = uri,
+                                contentDescription = "Photo",
+                                modifier = Modifier.weight(1f).aspectRatio(1f)
+                                    .clip(RoundedCornerShape(8.dp)),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                        // Fill empty cells
+                        repeat(3 - row.size) {
+                            Spacer(Modifier.weight(1f))
+                        }
+                    }
+                }
+            }
+            if (images.size > 6) {
+                Spacer(Modifier.height(8.dp))
+                Text("+ ${images.size - 6} more", style = MaterialTheme.typography.bodySmall, color = c.violetLight)
+            }
         }
     }
 }
