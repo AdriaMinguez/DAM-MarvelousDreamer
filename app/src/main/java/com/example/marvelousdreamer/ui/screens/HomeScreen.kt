@@ -320,6 +320,10 @@ private fun HomeTripCard(trip: Trip, onClick: () -> Unit) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(trip.title, style = MaterialTheme.typography.titleMedium,
                     color = c.snow, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                if (trip.id.startsWith("hotel_")) {
+                    Text("🏨 Hotel reservation", style = MaterialTheme.typography.labelSmall,
+                        color = c.emeraldLight, fontWeight = FontWeight.Bold)
+                }
                 Spacer(Modifier.height(3.dp))
                 Text("📅 $dateRange · $nights nights",
                     style = MaterialTheme.typography.bodySmall, color = c.fog)
