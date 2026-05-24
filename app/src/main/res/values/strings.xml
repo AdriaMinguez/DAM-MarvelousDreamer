@@ -5,8 +5,8 @@
     ═══════════════════════════════════════════════════════════════════════════ -->
     <string name="app_name">Marvelous Dreamer</string>
     <string name="app_tagline">Where imagination meets technology</string>
-    <string name="app_version">2.0.0</string>
-    <string name="app_sprint">Sprint 02</string>
+    <string name="app_version">4.0.0</string>
+    <string name="app_sprint">Sprint 04</string>
     <string name="app_min_api">API 26 (Android 8.0)</string>
     <string name="app_kotlin_version">2.0.0</string>
     <string name="app_license">MIT</string>

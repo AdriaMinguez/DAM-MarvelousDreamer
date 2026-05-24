@@ -80,8 +80,8 @@
     <string name="terms5_body">Ens reservem el dret de modificar aquests termes en qualsevol moment. Els canvis tindran efecte en publicar la versió actualitzada.</string>
 
     <!-- App Info -->
-    <string name="app_version">2.0.0</string>
-    <string name="app_sprint">Sprint 02</string>
+    <string name="app_version">4.0.0</string>
+    <string name="app_sprint">Sprint 04</string>
     <string name="app_min_api">API 26 (Android 8.0)</string>
     <string name="app_kotlin_version">2.0.0</string>
     <string name="app_license">MIT</string>
