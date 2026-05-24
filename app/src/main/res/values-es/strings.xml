@@ -12,8 +12,6 @@
 
     <!-- Home -->
     <string name="home_greeting">Buenos días, 👋</string>
-    <string name="home_upcoming">Próximos viajes</string>
-    <string name="home_see_all">Ver todos →</string>
     <string name="home_section_upcoming">Próximos viajes</string>
     <string name="home_section_see_all">Ver todos →</string>
     <string name="home_stat_trips">Viajes</string>
@@ -21,63 +19,18 @@
     <string name="home_stat_nights">Noches</string>
 
     <!-- Trip -->
-    <string name="trip_nights">noches</string>
-    <string name="trip_budget">Presupuesto</string>
-    <string name="trip_activities">Actividades</string>
-    <string name="trip_tab_itinerary">Itinerario</string>
-    <string name="trip_tab_budget">Presupuesto</string>
-    <string name="trip_tab_notes">Notas</string>
 
     <!-- Add/Edit Trip -->
-    <string name="add_trip">Nuevo viaje</string>
-    <string name="edit_trip">Editar viaje</string>
-    <string name="trip_title_label">Título *</string>
-    <string name="trip_description_label">Descripción</string>
-    <string name="trip_destination_label">Destino</string>
-    <string name="trip_start_date_label">Fecha de inicio *</string>
-    <string name="trip_end_date_label">Fecha de fin *</string>
-    <string name="trip_budget_label">Presupuesto (€)</string>
-    <string name="trip_save">Guardar viaje</string>
-    <string name="trip_create">Crear viaje</string>
-    <string name="trip_delete">Eliminar viaje</string>
 
     <!-- Add/Edit Activity -->
-    <string name="add_activity">Nueva actividad</string>
-    <string name="edit_activity">Editar actividad</string>
-    <string name="activity_title_label">Título *</string>
-    <string name="activity_description_label">Descripción</string>
-    <string name="activity_date_label">Fecha *</string>
-    <string name="activity_time_label">Hora *</string>
-    <string name="activity_location_label">Lugar</string>
-    <string name="activity_cost_label">Coste (€)</string>
-    <string name="activity_type_label">Tipo</string>
-    <string name="activity_save">Guardar actividad</string>
-    <string name="activity_create">Añadir actividad</string>
-    <string name="activity_delete">Eliminar actividad</string>
 
     <!-- Validation errors -->
-    <string name="error_field_required">Este campo es obligatorio</string>
-    <string name="error_date_select_start">Selecciona una fecha de inicio</string>
-    <string name="error_date_select_end">Selecciona una fecha de fin</string>
-    <string name="error_date_order">La fecha de fin debe ser posterior a la de inicio</string>
-    <string name="error_date_outside_range">La fecha debe estar dentro del rango del viaje</string>
-    <string name="error_time_required">Selecciona una hora</string>
 
     <!-- Common actions -->
-    <string name="action_save">Guardar</string>
-    <string name="action_cancel">Cancelar</string>
-    <string name="action_delete">Eliminar</string>
-    <string name="action_back">Atrás</string>
-    <string name="action_ok">Aceptar</string>
-    <string name="select_date">Selecciona fecha</string>
-    <string name="select_time">Selecciona hora</string>
 
     <!-- Preferences -->
     <string name="prefs_title">Preferencias</string>
     <string name="prefs_subtitle">Personaliza tu experiencia</string>
-    <string name="prefs_section_account">👤 CUENTA</string>
-    <string name="prefs_username_label">Nombre de usuario</string>
-    <string name="prefs_dob_label">Fecha de nacimiento</string>
     <string name="prefs_section_language">🌐 IDIOMA Y REGIÓN</string>
     <string name="prefs_language_label">Idioma</string>
     <string name="prefs_language_subtitle">Idioma de la interfaz</string>
@@ -109,10 +62,6 @@
     <string name="detail_budget_remaining">Restante</string>
 
     <!-- About -->
-    <string name="about_version">Versión</string>
-    <string name="about_sprint">Sprint</string>
-    <string name="about_developer">Desarrollador</string>
-    <string name="about_tagline">Planifica tus aventuras, a tu manera.</string>
 
     <!-- Terms -->
     <string name="terms_title">Términos y Condiciones</string>

@@ -12,8 +12,6 @@
 
     <!-- Home -->
     <string name="home_greeting">Bon dia, 👋</string>
-    <string name="home_upcoming">Propers viatges</string>
-    <string name="home_see_all">Veure tots →</string>
     <string name="home_section_upcoming">Propers viatges</string>
     <string name="home_section_see_all">Veure tots →</string>
     <string name="home_stat_trips">Viatges</string>
@@ -21,63 +19,18 @@
     <string name="home_stat_nights">Nits</string>
 
     <!-- Trip -->
-    <string name="trip_nights">nits</string>
-    <string name="trip_budget">Pressupost</string>
-    <string name="trip_activities">Activitats</string>
-    <string name="trip_tab_itinerary">Itinerari</string>
-    <string name="trip_tab_budget">Pressupost</string>
-    <string name="trip_tab_notes">Notes</string>
 
     <!-- Add/Edit Trip -->
-    <string name="add_trip">Nou viatge</string>
-    <string name="edit_trip">Editar viatge</string>
-    <string name="trip_title_label">Títol *</string>
-    <string name="trip_description_label">Descripció</string>
-    <string name="trip_destination_label">Destinació</string>
-    <string name="trip_start_date_label">Data d\'inici *</string>
-    <string name="trip_end_date_label">Data de fi *</string>
-    <string name="trip_budget_label">Pressupost (€)</string>
-    <string name="trip_save">Desar viatge</string>
-    <string name="trip_create">Crear viatge</string>
-    <string name="trip_delete">Eliminar viatge</string>
 
     <!-- Add/Edit Activity -->
-    <string name="add_activity">Nova activitat</string>
-    <string name="edit_activity">Editar activitat</string>
-    <string name="activity_title_label">Títol *</string>
-    <string name="activity_description_label">Descripció</string>
-    <string name="activity_date_label">Data *</string>
-    <string name="activity_time_label">Hora *</string>
-    <string name="activity_location_label">Lloc</string>
-    <string name="activity_cost_label">Cost (€)</string>
-    <string name="activity_type_label">Tipus</string>
-    <string name="activity_save">Desar activitat</string>
-    <string name="activity_create">Afegir activitat</string>
-    <string name="activity_delete">Eliminar activitat</string>
 
     <!-- Validation errors -->
-    <string name="error_field_required">Aquest camp és obligatori</string>
-    <string name="error_date_select_start">Selecciona una data d\'inici</string>
-    <string name="error_date_select_end">Selecciona una data de fi</string>
-    <string name="error_date_order">La data de fi ha de ser posterior a la d\'inici</string>
-    <string name="error_date_outside_range">La data ha d\'estar dins del rang del viatge</string>
-    <string name="error_time_required">Selecciona una hora</string>
 
     <!-- Common actions -->
-    <string name="action_save">Desar</string>
-    <string name="action_cancel">Cancel·lar</string>
-    <string name="action_delete">Eliminar</string>
-    <string name="action_back">Enrere</string>
-    <string name="action_ok">D\'acord</string>
-    <string name="select_date">Selecciona data</string>
-    <string name="select_time">Selecciona hora</string>
 
     <!-- Preferences -->
     <string name="prefs_title">Preferències</string>
     <string name="prefs_subtitle">Personalitza la teva experiència</string>
-    <string name="prefs_section_account">👤 COMPTE</string>
-    <string name="prefs_username_label">Nom d\'usuari</string>
-    <string name="prefs_dob_label">Data de naixement</string>
     <string name="prefs_section_language">🌐 IDIOMA I REGIÓ</string>
     <string name="prefs_language_label">Idioma</string>
     <string name="prefs_language_subtitle">Idioma de la interfície</string>
@@ -109,10 +62,6 @@
     <string name="detail_budget_remaining">Restant</string>
 
     <!-- About -->
-    <string name="about_version">Versió</string>
-    <string name="about_sprint">Sprint</string>
-    <string name="about_developer">Desenvolupador</string>
-    <string name="about_tagline">Planifica les teves aventures, al teu estil.</string>
 
     <!-- Terms -->
     <string name="terms_title">Termes i Condicions</string>

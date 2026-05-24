@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <!-- ═══════════════════════════════════════════════════════════════════════
          APP INFO  (Splash · About)
     ═══════════════════════════════════════════════════════════════════════════ -->
@@ -12,12 +11,10 @@
     <string name="app_kotlin_version">2.0.0</string>
     <string name="app_license">MIT</string>
     <string name="app_built_at">Built with ❤️ by Adrià Mínguez</string>
-
     <!-- ═══════════════════════════════════════════════════════════════════════
          SPLASH
     ═══════════════════════════════════════════════════════════════════════════ -->
     <string name="splash_loading">LOADING…</string>
-
     <!-- ═══════════════════════════════════════════════════════════════════════
          HOME
     ═══════════════════════════════════════════════════════════════════════════ -->
@@ -27,7 +24,6 @@
     <string name="home_stat_trips">Trips</string>
     <string name="home_stat_budget">Budget</string>
     <string name="home_stat_nights">Nights</string>
-
     <!-- ═══════════════════════════════════════════════════════════════════════
          BOTTOM NAV
     ═══════════════════════════════════════════════════════════════════════════ -->
@@ -35,147 +31,28 @@
     <string name="nav_trips">Trips</string>
     <string name="nav_gallery">Gallery</string>
     <string name="nav_settings">Settings</string>
-
     <!-- ═══════════════════════════════════════════════════════════════════════
          USER  (mock)
     ═══════════════════════════════════════════════════════════════════════════ -->
     <string name="user_name">Adrià</string>
     <string name="user_email">adria@marvelousdreamer.com</string>
-
     <!-- ═══════════════════════════════════════════════════════════════════════
          TRIP 1 — Kyoto Escape
     ═══════════════════════════════════════════════════════════════════════════ -->
-    <string name="trip1_id">trip_kyoto</string>
-    <string name="trip1_title">Kyoto Escape</string>
-    <string name="trip1_destination">Kyoto, Japan</string>
-    <string name="trip1_start">Jun 3</string>
-    <string name="trip1_end">Jun 12</string>
-    <string name="trip1_nights">9</string>
-    <string name="trip1_budget">1560</string>
-    <string name="trip1_spent">720</string>
-    <string name="trip1_cover_emoji">⛩️</string>
-    <string name="trip1_notes">Book Arashiyama bamboo grove early morning to avoid crowds. Get an IC Card at the airport. Try kaiseki dinner at Nakamura.</string>
-
     <!-- Kyoto · Day 1 -->
-    <string name="trip1_day1_label">DAY 1 · JUN 3</string>
-    <string name="trip1_day1_act1_emoji">✈️</string>
-    <string name="trip1_day1_act1_time">09:15</string>
-    <string name="trip1_day1_act1_title">Flight BCN → KIX</string>
-    <string name="trip1_day1_act1_desc">Iberia IB6845 · Terminal 1</string>
-    <string name="trip1_day1_act1_cost">480</string>
-    <string name="trip1_day1_act2_emoji">🏨</string>
-    <string name="trip1_day1_act2_time">21:00</string>
-    <string name="trip1_day1_act2_title">Check-in Gion Ryokan</string>
-    <string name="trip1_day1_act2_desc">Gion district · Traditional inn</string>
-    <string name="trip1_day1_act2_cost">110</string>
-
     <!-- Kyoto · Day 2 -->
-    <string name="trip1_day2_label">DAY 2 · JUN 4</string>
-    <string name="trip1_day2_act1_emoji">🎋</string>
-    <string name="trip1_day2_act1_time">07:00</string>
-    <string name="trip1_day2_act1_title">Arashiyama Bamboo Grove</string>
-    <string name="trip1_day2_act1_desc">Early visit · 1h walk</string>
-    <string name="trip1_day2_act1_cost">0</string>
-    <string name="trip1_day2_act2_emoji">🍵</string>
-    <string name="trip1_day2_act2_time">11:00</string>
-    <string name="trip1_day2_act2_title">Tea Ceremony</string>
-    <string name="trip1_day2_act2_desc">Urasenke school · 2h</string>
-    <string name="trip1_day2_act2_cost">45</string>
-    <string name="trip1_day2_act3_emoji">⛩️</string>
-    <string name="trip1_day2_act3_time">15:00</string>
-    <string name="trip1_day2_act3_title">Fushimi Inari Shrine</string>
-    <string name="trip1_day2_act3_desc">Thousand torii gates · 2h</string>
-    <string name="trip1_day2_act3_cost">0</string>
-
     <!-- Kyoto · Day 3 -->
-    <string name="trip1_day3_label">DAY 3 · JUN 5</string>
-    <string name="trip1_day3_act1_emoji">🏯</string>
-    <string name="trip1_day3_act1_time">10:00</string>
-    <string name="trip1_day3_act1_title">Nijo Castle</string>
-    <string name="trip1_day3_act1_desc">UNESCO World Heritage site</string>
-    <string name="trip1_day3_act1_cost">15</string>
-    <string name="trip1_day3_act2_emoji">🍱</string>
-    <string name="trip1_day3_act2_time">19:00</string>
-    <string name="trip1_day3_act2_title">Kaiseki dinner</string>
-    <string name="trip1_day3_act2_desc">Nakamura restaurant · Reserve ahead</string>
-    <string name="trip1_day3_act2_cost">85</string>
-
     <!-- Kyoto · Gallery captions -->
-    <string name="trip1_img1_caption">Fushimi Inari</string>
-    <string name="trip1_img2_caption">Bamboo Grove</string>
-    <string name="trip1_img3_caption">Gion at night</string>
-    <string name="trip1_img4_caption">Tea Ceremony</string>
-    <string name="trip1_img5_caption">Nijo Castle</string>
-    <string name="trip1_img6_caption">Kinkaku-ji</string>
-    <string name="trip1_img7_caption">Kaiseki dinner</string>
-    <string name="trip1_img8_caption">Shinkansen view</string>
-    <string name="trip1_img9_caption">Philosopher\'s Path</string>
-
     <!-- ═══════════════════════════════════════════════════════════════════════
          TRIP 2 — Moroccan Dream
     ═══════════════════════════════════════════════════════════════════════════ -->
-    <string name="trip2_id">trip_morocco</string>
-    <string name="trip2_title">Moroccan Dream</string>
-    <string name="trip2_destination">Marrakech, Morocco</string>
-    <string name="trip2_start">Sep 14</string>
-    <string name="trip2_end">Sep 20</string>
-    <string name="trip2_nights">6</string>
-    <string name="trip2_budget">980</string>
-    <string name="trip2_spent">410</string>
-    <string name="trip2_cover_emoji">🕌</string>
-    <string name="trip2_notes">Bargain at the souks — start at 30% of the asking price. Book a desert excursion in advance. Avoid tap water.</string>
-
     <!-- Morocco · Day 1 -->
-    <string name="trip2_day1_label">DAY 1 · SEP 14</string>
-    <string name="trip2_day1_act1_emoji">✈️</string>
-    <string name="trip2_day1_act1_time">06:30</string>
-    <string name="trip2_day1_act1_title">Flight BCN → RAK</string>
-    <string name="trip2_day1_act1_desc">Ryanair FR2241</string>
-    <string name="trip2_day1_act1_cost">95</string>
-    <string name="trip2_day1_act2_emoji">🏨</string>
-    <string name="trip2_day1_act2_time">11:00</string>
-    <string name="trip2_day1_act2_title">Riad Yasmine</string>
-    <string name="trip2_day1_act2_desc">Medina · Rooftop pool</string>
-    <string name="trip2_day1_act2_cost">75</string>
-
     <!-- Morocco · Day 2 -->
-    <string name="trip2_day2_label">DAY 2 · SEP 15</string>
-    <string name="trip2_day2_act1_emoji">🏺</string>
-    <string name="trip2_day2_act1_time">09:00</string>
-    <string name="trip2_day2_act1_title">Medina Souks</string>
-    <string name="trip2_day2_act1_desc">Spices, crafts &amp; textiles</string>
-    <string name="trip2_day2_act1_cost">0</string>
-    <string name="trip2_day2_act2_emoji">🍊</string>
-    <string name="trip2_day2_act2_time">13:00</string>
-    <string name="trip2_day2_act2_title">Lunch at Djemaa el-Fna</string>
-    <string name="trip2_day2_act2_desc">Street food · Fresh orange juice</string>
-    <string name="trip2_day2_act2_cost">12</string>
-    <string name="trip2_day2_act3_emoji">🌅</string>
-    <string name="trip2_day2_act3_time">17:00</string>
-    <string name="trip2_day2_act3_title">Majorelle Garden</string>
-    <string name="trip2_day2_act3_desc">Yves Saint Laurent garden</string>
-    <string name="trip2_day2_act3_cost">15</string>
-
     <!-- Morocco · Gallery captions -->
-    <string name="trip2_img1_caption">Djemaa el-Fna</string>
-    <string name="trip2_img2_caption">Majorelle Garden</string>
-    <string name="trip2_img3_caption">Medina at dusk</string>
-    <string name="trip2_img4_caption">Mint tea</string>
-
     <!-- ═══════════════════════════════════════════════════════════════════════
          TRIP 3 — Iceland Aurora
     ═══════════════════════════════════════════════════════════════════════════ -->
-    <string name="trip3_id">trip_iceland</string>
-    <string name="trip3_title">Iceland Aurora</string>
-    <string name="trip3_destination">Reykjavik, Iceland</string>
-    <string name="trip3_start">Nov 20</string>
-    <string name="trip3_end">Nov 25</string>
-    <string name="trip3_nights">5</string>
-    <string name="trip3_budget">1800</string>
-    <string name="trip3_spent">0</string>
-    <string name="trip3_cover_emoji">🌌</string>
     <!-- trip_iceland has no notes yet -->
-
     <!-- ═══════════════════════════════════════════════════════════════════════
          TRIP DETAIL
     ═══════════════════════════════════════════════════════════════════════════ -->
@@ -188,7 +65,6 @@
     <string name="detail_budget_total">Total Budget</string>
     <string name="detail_budget_spent">Spent</string>
     <string name="detail_budget_remaining">Remaining</string>
-
     <!-- ═══════════════════════════════════════════════════════════════════════
          GALLERY
     ═══════════════════════════════════════════════════════════════════════════ -->
@@ -201,9 +77,6 @@
     ═══════════════════════════════════════════════════════════════════════════ -->
     <string name="prefs_title">Preferences</string>
     <string name="prefs_subtitle">Customize your Marvelous Dreamer experience</string>
-    <string name="prefs_section_account">👤 ACCOUNT</string>
-    <string name="prefs_username_label">Username</string>
-    <string name="prefs_dob_label">Date of birth</string>
     <string name="prefs_section_language">🌐 LANGUAGE &amp; REGION</string>
     <string name="prefs_section_appearance">🎨 APPEARANCE</string>
     <string name="prefs_section_notifications">🔔 NOTIFICATIONS</string>
@@ -222,42 +95,35 @@
     <string name="prefs_notif_weekly_subtitle">Email with upcoming trips</string>
     <string name="prefs_notif_ai_label">AI suggestions</string>
     <string name="prefs_notif_ai_subtitle">Personalized recommendations</string>
-
     <!-- Preference default values -->
-    <string name="prefs_default_language">🇬🇧 English</string>
-    <string name="prefs_default_currency">EUR (€)</string>
-    <string name="prefs_default_dateformat">DD/MM/YYYY</string>
-    <string name="prefs_default_textsize">Normal</string>
-
+    <string name="prefs_default_language" translatable="false">🇬🇧 English</string>
+    <string name="prefs_default_currency" translatable="false">EUR (€)</string>
+    <string name="prefs_default_dateformat" translatable="false">DD/MM/YYYY</string>
+    <string name="prefs_default_textsize" translatable="false">Normal</string>
     <!-- Preference option arrays -->
     <string-array name="languages">
         <item>Català</item>
         <item>English</item>
         <item>Español</item>
     </string-array>
-
     <string-array name="currencies">
         <item>EUR (€)</item>
         <item>USD ($)</item>
         <item>GBP (£)</item>
     </string-array>
-
     <string-array name="date_formats">
         <item>DD/MM/YYYY</item>
         <item>MM/DD/YYYY</item>
         <item>YYYY-MM-DD</item>
     </string-array>
-
     <string-array name="text_sizes">
         <item>Small</item>
         <item>Normal</item>
         <item>Large</item>
     </string-array>
-
     <!-- ═══════════════════════════════════════════════════════════════════════
          ABOUT
     ═══════════════════════════════════════════════════════════════════════════ -->
-    <string name="about_title">About</string>
     <string name="about_section_team">👨‍💻 DEVELOPER</string>
     <string name="about_section_tech">ℹ️ TECHNICAL INFO</string>
     <string name="about_tech_version">Version</string>
@@ -265,7 +131,6 @@
     <string name="about_tech_android">Min. Android</string>
     <string name="about_tech_kotlin">Kotlin</string>
     <string name="about_tech_license">License</string>
-
     <!-- Developer -->
     <string name="team1_initials">AM</string>
     <string name="team1_name">Adrià Mínguez</string>
@@ -287,5 +152,4 @@
     <string name="terms4_body">The application may integrate external services such as Google Maps or flight APIs. The use of these services is subject to their own privacy policies and terms of use.</string>
     <string name="terms5_title">5. 📝 Modifications</string>
     <string name="terms5_body">We reserve the right to modify these terms at any time. Changes will take effect upon publishing the updated version within the application.</string>
-
 </resources>
