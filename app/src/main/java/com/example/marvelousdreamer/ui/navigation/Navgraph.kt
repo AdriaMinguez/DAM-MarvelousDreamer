@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,12 +25,15 @@ import com.example.marvelousdreamer.R
 import com.example.marvelousdreamer.ui.screens.*
 import com.example.marvelousdreamer.ui.themes.*
 import com.example.marvelousdreamer.ui.viewmodel.AuthViewModel
+import com.example.marvelousdreamer.ui.viewmodel.GalleryViewModel
+import com.example.marvelousdreamer.ui.viewmodel.HotelViewModel
 import com.example.marvelousdreamer.ui.viewmodel.TripViewModel
 
 private val noBottomBarRoutes = setOf(
     Routes.SPLASH, Routes.TERMS, Routes.ADD_TRIP, Routes.EDIT_TRIP,
     Routes.ADD_ACTIVITY, Routes.EDIT_ACTIVITY,
-    Routes.LOGIN, Routes.REGISTER, Routes.FORGOT_PASSWORD
+    Routes.LOGIN, Routes.REGISTER, Routes.FORGOT_PASSWORD,
+    Routes.HOTEL_DETAIL
 )
 
 @Composable
@@ -51,11 +53,16 @@ fun NavGraph(
 
     val authViewModel: AuthViewModel = hiltViewModel()
     val tripViewModel: TripViewModel = hiltViewModel()
+    val hotelViewModel: HotelViewModel = hiltViewModel()
+    val galleryViewModel: GalleryViewModel = hiltViewModel()
     val authState by authViewModel.authState.collectAsState()
 
     LaunchedEffect(authState.isLoggedIn) {
         val uid = authViewModel.currentUserId
-        if (uid != null) tripViewModel.setUserId(uid)
+        if (uid != null) {
+            tripViewModel.setUserId(uid)
+            hotelViewModel.setUserId(uid)
+        }
     }
 
     var activeTripId by remember { mutableStateOf("") }
@@ -65,254 +72,225 @@ fun NavGraph(
         bottomBar = {
             if (showBottomBar) {
                 AppBottomBar(
-                    currentRoute    = currentRoute,
-                    onHomeClick     = { navController.navigate(Routes.HOME) { popUpTo(Routes.HOME) { inclusive = true } } },
-                    onTripsClick    = { if (activeTripId.isNotEmpty()) navController.navigate(Routes.tripDetail(activeTripId)) },
-                    onGalleryClick  = { if (activeTripId.isNotEmpty()) navController.navigate(Routes.tripGallery(activeTripId)) },
+                    currentRoute = currentRoute,
+                    onHomeClick = { navController.navigate(Routes.HOME) { popUpTo(Routes.HOME) { inclusive = true } } },
+                    onHotelsClick = { navController.navigate(Routes.HOTEL_SEARCH) },
+                    onReservationsClick = { navController.navigate(Routes.RESERVATIONS) },
                     onSettingsClick = { navController.navigate(Routes.PREFERENCES) }
                 )
             }
         }
     ) { innerPadding ->
         NavHost(
-            navController    = navController,
+            navController = navController,
             startDestination = Routes.SPLASH,
-            modifier         = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding)
         ) {
             composable(Routes.SPLASH) {
-                SplashScreen(
-                    onFinished = {
-                        val dest = if (authState.isLoggedIn) Routes.HOME else Routes.LOGIN
-                        navController.navigate(dest) { popUpTo(Routes.SPLASH) { inclusive = true } }
-                    }
-                )
+                SplashScreen(onFinished = {
+                    val dest = if (authState.isLoggedIn) Routes.HOME else Routes.LOGIN
+                    navController.navigate(dest) { popUpTo(Routes.SPLASH) { inclusive = true } }
+                })
             }
 
+            // ── Auth ──────────────────────────────────────────────
             composable(Routes.LOGIN) {
-                LoginScreen(
-                    authViewModel = authViewModel,
-                    onLoginSuccess = {
-                        navController.navigate(Routes.HOME) { popUpTo(Routes.LOGIN) { inclusive = true } }
-                    },
+                LoginScreen(authViewModel = authViewModel,
+                    onLoginSuccess = { navController.navigate(Routes.HOME) { popUpTo(Routes.LOGIN) { inclusive = true } } },
                     onNavigateToRegister = { navController.navigate(Routes.REGISTER) },
-                    onNavigateToForgotPassword = { navController.navigate(Routes.FORGOT_PASSWORD) }
-                )
+                    onNavigateToForgotPassword = { navController.navigate(Routes.FORGOT_PASSWORD) })
             }
-
             composable(Routes.REGISTER) {
-                RegisterScreen(
-                    authViewModel = authViewModel,
-                    onRegisterSuccess = {
-                        navController.navigate(Routes.HOME) { popUpTo(Routes.LOGIN) { inclusive = true } }
-                    },
-                    onBack = { navController.popBackStack() }
-                )
+                RegisterScreen(authViewModel = authViewModel,
+                    onRegisterSuccess = { navController.navigate(Routes.HOME) { popUpTo(Routes.LOGIN) { inclusive = true } } },
+                    onBack = { navController.popBackStack() })
             }
-
             composable(Routes.FORGOT_PASSWORD) {
-                ForgotPasswordScreen(
-                    authViewModel = authViewModel,
-                    onBack = { navController.popBackStack() }
-                )
+                ForgotPasswordScreen(authViewModel = authViewModel, onBack = { navController.popBackStack() })
             }
-
             composable(Routes.EDIT_PROFILE) {
-                EditProfileScreen(
-                    authViewModel = authViewModel,
-                    onBack = { navController.popBackStack() }
-                )
+                EditProfileScreen(authViewModel = authViewModel, onBack = { navController.popBackStack() })
             }
 
+            // ── Home ──────────────────────────────────────────────
             composable(Routes.HOME) {
                 HomeScreen(
-                    viewModel       = tripViewModel,
-                    authViewModel   = authViewModel,
-                    onTripClick     = { tripId -> navController.navigate(Routes.tripDetail(tripId)) },
-                    onAddTripClick  = { navController.navigate(Routes.ADD_TRIP) },
-                    onSeeAllClick   = { navController.navigate(Routes.TRIPS_LIST) },
-                    onProfileClick  = { navController.navigate(Routes.PROFILE) },
-                    onTermsClick    = { navController.navigate(Routes.TERMS) },
-                    onAboutClick    = { navController.navigate(Routes.ABOUT) },
+                    viewModel = tripViewModel, authViewModel = authViewModel,
+                    onTripClick = { navController.navigate(Routes.tripDetail(it)) },
+                    onAddTripClick = { navController.navigate(Routes.ADD_TRIP) },
+                    onSeeAllClick = { navController.navigate(Routes.TRIPS_LIST) },
+                    onProfileClick = { navController.navigate(Routes.PROFILE) },
+                    onTermsClick = { navController.navigate(Routes.TERMS) },
+                    onAboutClick = { navController.navigate(Routes.ABOUT) },
                     onSettingsClick = { navController.navigate(Routes.PREFERENCES) },
-                    onLogout        = {
+                    onLogout = {
                         authViewModel.logout()
                         navController.navigate(Routes.LOGIN) { popUpTo(0) { inclusive = true } }
                     }
                 )
             }
 
-            composable(
-                route = Routes.TRIP_DETAIL,
-                arguments = listOf(navArgument("tripId") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val tripId = backStackEntry.arguments?.getString("tripId") ?: ""
+            // ── Trip Detail ───────────────────────────────────────
+            composable(Routes.TRIP_DETAIL, arguments = listOf(navArgument("tripId") { type = NavType.StringType })) { entry ->
+                val tripId = entry.arguments?.getString("tripId") ?: ""
                 if (tripId.isNotEmpty()) {
                     TripDetailScreen(
-                        tripId         = tripId,
-                        viewModel      = tripViewModel,
-                        onBack         = { navController.navigate(Routes.HOME) { popUpTo(Routes.HOME) { inclusive = true } } },
-                        onEditTrip     = { id -> navController.navigate(Routes.editTrip(id)) },
-                        onAddActivity  = { id -> navController.navigate(Routes.addActivity(id)) },
-                        onEditActivity = { tId, aId -> navController.navigate(Routes.editActivity(tId, aId)) },
-                        onGalleryClick = { id -> activeTripId = id; navController.navigate(Routes.tripGallery(id)) },
-                        onTripChanged  = { id -> activeTripId = id }
+                        tripId = tripId, viewModel = tripViewModel,
+                        galleryViewModel = galleryViewModel,
+                        onBack = { navController.navigate(Routes.HOME) { popUpTo(Routes.HOME) { inclusive = true } } },
+                        onEditTrip = { navController.navigate(Routes.editTrip(it)) },
+                        onAddActivity = { navController.navigate(Routes.addActivity(it)) },
+                        onEditActivity = { t, a -> navController.navigate(Routes.editActivity(t, a)) },
+                        onGalleryClick = { activeTripId = it; navController.navigate(Routes.tripGallery(it)) },
+                        onTripChanged = { activeTripId = it }
                     )
                 }
             }
 
-            composable(
-                route = Routes.TRIP_GALLERY,
-                arguments = listOf(navArgument("tripId") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val tripId = backStackEntry.arguments?.getString("tripId") ?: ""
-                if (tripId.isNotEmpty()) {
-                    TripGalleryScreen(
-                        tripId = tripId,
-                        onBack = {
-                            activeTripId = tripId
-                            navController.navigate(Routes.tripDetail(tripId)) {
-                                popUpTo(Routes.HOME) { inclusive = false }
-                            }
-                        }
-                    )
-                }
+            // ── Trip Gallery (real gallery with image picker) ─────
+            composable(Routes.TRIP_GALLERY, arguments = listOf(navArgument("tripId") { type = NavType.StringType })) { entry ->
+                val tripId = entry.arguments?.getString("tripId") ?: ""
+                TripGalleryScreen(tripId = tripId, galleryViewModel = galleryViewModel,
+                    onBack = { navController.popBackStack() })
             }
 
+            // ── Preferences ───────────────────────────────────────
             composable(Routes.PREFERENCES) {
-                PreferencesScreen(
-                    onBack = { navController.popBackStack() },
-                    onDarkModeChanged = onDarkModeChanged,
-                    onLanguageChanged = onLanguageChanged
-                )
+                PreferencesScreen(onBack = { navController.popBackStack() },
+                    onDarkModeChanged = onDarkModeChanged, onLanguageChanged = onLanguageChanged)
             }
 
+            // ── Profile ───────────────────────────────────────────
             composable(Routes.PROFILE) {
                 ProfileScreen(
-                    onBack          = { navController.popBackStack() },
+                    onBack = { navController.popBackStack() },
                     onSettingsClick = { navController.navigate(Routes.PREFERENCES) },
-                    onTripClick     = { tripId -> navController.navigate(Routes.tripDetail(tripId)) },
-                    onEditProfile   = { navController.navigate(Routes.EDIT_PROFILE) },
-                    onLogout        = {
+                    onTripClick = { navController.navigate(Routes.tripDetail(it)) },
+                    onEditProfile = { navController.navigate(Routes.EDIT_PROFILE) },
+                    onLogout = {
                         authViewModel.logout()
                         navController.navigate(Routes.LOGIN) { popUpTo(0) { inclusive = true } }
                     },
-                    viewModel       = tripViewModel,
-                    authViewModel   = authViewModel
+                    viewModel = tripViewModel, authViewModel = authViewModel
                 )
             }
 
             composable(Routes.ABOUT) { AboutScreen(onBack = { navController.popBackStack() }) }
-
             composable(Routes.TERMS) {
                 TermsScreen(
-                    onAccept  = { navController.navigate(Routes.HOME) { popUpTo(Routes.TERMS) { inclusive = true } } },
-                    onDecline = { navController.popBackStack() }
-                )
+                    onAccept = { navController.navigate(Routes.HOME) { popUpTo(Routes.TERMS) { inclusive = true } } },
+                    onDecline = { navController.popBackStack() })
             }
 
             composable(Routes.TRIPS_LIST) {
                 TripDetailScreen(
-                    tripId = activeTripId.ifEmpty { "none" },
-                    viewModel = tripViewModel,
-                    onBack         = { navController.navigate(Routes.HOME) { popUpTo(Routes.HOME) { inclusive = true } } },
-                    onEditTrip     = { id -> navController.navigate(Routes.editTrip(id)) },
-                    onAddActivity  = { id -> navController.navigate(Routes.addActivity(id)) },
-                    onEditActivity = { tId, aId -> navController.navigate(Routes.editActivity(tId, aId)) },
-                    onGalleryClick = { id -> activeTripId = id; navController.navigate(Routes.tripGallery(id)) },
-                    onTripChanged  = { id -> activeTripId = id }
+                    tripId = activeTripId.ifEmpty { "none" }, viewModel = tripViewModel,
+                    galleryViewModel = galleryViewModel,
+                    onBack = { navController.navigate(Routes.HOME) { popUpTo(Routes.HOME) { inclusive = true } } },
+                    onEditTrip = { navController.navigate(Routes.editTrip(it)) },
+                    onAddActivity = { navController.navigate(Routes.addActivity(it)) },
+                    onEditActivity = { t, a -> navController.navigate(Routes.editActivity(t, a)) },
+                    onGalleryClick = { activeTripId = it; navController.navigate(Routes.tripGallery(it)) },
+                    onTripChanged = { activeTripId = it }
                 )
             }
 
             composable(Routes.GALLERY_ALL) {
-                TripGalleryScreen(tripId = "", onBack = { navController.navigate(Routes.HOME) })
+                TripGalleryScreen(tripId = "", galleryViewModel = galleryViewModel,
+                    onBack = { navController.navigate(Routes.HOME) })
             }
 
+            // ── Trip CRUD ─────────────────────────────────────────
             composable(Routes.ADD_TRIP) {
                 LaunchedEffect(Unit) { tripViewModel.prepareAddTrip() }
-                AddEditTripScreen(
-                    tripId = null, viewModel = tripViewModel,
+                AddEditTripScreen(tripId = null, viewModel = tripViewModel,
                     onBack = { navController.popBackStack() },
-                    onSaved = { navController.navigate(Routes.HOME) { popUpTo(Routes.HOME) { inclusive = true } } }
-                )
+                    onSaved = { navController.navigate(Routes.HOME) { popUpTo(Routes.HOME) { inclusive = true } } })
             }
-
-            composable(
-                route = Routes.EDIT_TRIP,
-                arguments = listOf(navArgument("tripId") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val tripId = backStackEntry.arguments?.getString("tripId") ?: ""
+            composable(Routes.EDIT_TRIP, arguments = listOf(navArgument("tripId") { type = NavType.StringType })) { entry ->
+                val tripId = entry.arguments?.getString("tripId") ?: ""
                 val trip = tripViewModel.trips.value.find { it.id == tripId }
                 if (trip != null) {
                     LaunchedEffect(tripId) { tripViewModel.prepareEditTrip(trip) }
-                    AddEditTripScreen(
-                        tripId = tripId, viewModel = tripViewModel,
-                        onBack = { navController.popBackStack() },
-                        onSaved = { navController.popBackStack() }
-                    )
+                    AddEditTripScreen(tripId = tripId, viewModel = tripViewModel,
+                        onBack = { navController.popBackStack() }, onSaved = { navController.popBackStack() })
                 }
             }
-
-            composable(
-                route = Routes.ADD_ACTIVITY,
-                arguments = listOf(navArgument("tripId") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val tripId = backStackEntry.arguments?.getString("tripId") ?: ""
+            composable(Routes.ADD_ACTIVITY, arguments = listOf(navArgument("tripId") { type = NavType.StringType })) { entry ->
+                val tripId = entry.arguments?.getString("tripId") ?: ""
                 LaunchedEffect(Unit) { tripViewModel.prepareAddActivity() }
-                AddEditActivityScreen(
-                    tripId = tripId, activityId = null, viewModel = tripViewModel,
-                    onBack = { navController.popBackStack() },
-                    onSaved = { navController.popBackStack() }
-                )
+                AddEditActivityScreen(tripId = tripId, activityId = null, viewModel = tripViewModel,
+                    onBack = { navController.popBackStack() }, onSaved = { navController.popBackStack() })
             }
-
-            composable(
-                route = Routes.EDIT_ACTIVITY,
-                arguments = listOf(
-                    navArgument("tripId") { type = NavType.StringType },
-                    navArgument("activityId") { type = NavType.StringType }
-                )
-            ) { backStackEntry ->
-                val tripId = backStackEntry.arguments?.getString("tripId") ?: ""
-                val activityId = backStackEntry.arguments?.getString("activityId") ?: ""
-                val activity = tripViewModel.trips.value
-                    .find { it.id == tripId }?.activities?.find { it.id == activityId }
+            composable(Routes.EDIT_ACTIVITY, arguments = listOf(
+                navArgument("tripId") { type = NavType.StringType },
+                navArgument("activityId") { type = NavType.StringType }
+            )) { entry ->
+                val tripId = entry.arguments?.getString("tripId") ?: ""
+                val activityId = entry.arguments?.getString("activityId") ?: ""
+                val activity = tripViewModel.trips.value.find { it.id == tripId }?.activities?.find { it.id == activityId }
                 if (activity != null) {
                     LaunchedEffect(activityId) { tripViewModel.prepareEditActivity(activity) }
-                    AddEditActivityScreen(
-                        tripId = tripId, activityId = activityId, viewModel = tripViewModel,
-                        onBack = { navController.popBackStack() },
-                        onSaved = { navController.popBackStack() }
-                    )
+                    AddEditActivityScreen(tripId = tripId, activityId = activityId, viewModel = tripViewModel,
+                        onBack = { navController.popBackStack() }, onSaved = { navController.popBackStack() })
                 }
+            }
+
+            // ── Sprint 04: Hotels ─────────────────────────────────
+            composable(Routes.HOTEL_SEARCH) {
+                HotelSearchScreen(
+                    hotelViewModel = hotelViewModel,
+                    onBack = { navController.popBackStack() },
+                    onHotelClick = { hotel ->
+                        hotelViewModel.selectHotel(hotel)
+                        navController.navigate(Routes.HOTEL_DETAIL)
+                    }
+                )
+            }
+
+            composable(Routes.HOTEL_DETAIL) {
+                val start by hotelViewModel.searchStartDate.collectAsState()
+                val end by hotelViewModel.searchEndDate.collectAsState()
+                val email = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.email ?: ""
+                val uid = authViewModel.currentUserId ?: ""
+                HotelDetailScreen(
+                    hotelViewModel = hotelViewModel,
+                    startDate = start, endDate = end,
+                    guestName = email.substringBefore("@"),
+                    guestEmail = email, userId = uid,
+                    onBack = { navController.popBackStack() },
+                    onBooked = { navController.navigate(Routes.HOME) { popUpTo(Routes.HOME) { inclusive = true } } }
+                )
+            }
+
+            composable(Routes.RESERVATIONS) {
+                ReservationsScreen(hotelViewModel = hotelViewModel, onBack = { navController.popBackStack() })
             }
         }
     }
 }
 
+// ─── Bottom bar ───────────────────────────────────────────────
+
 @Composable
 private fun AppBottomBar(
     currentRoute: String?,
     onHomeClick: () -> Unit,
-    onTripsClick: () -> Unit,
-    onGalleryClick: () -> Unit,
+    onHotelsClick: () -> Unit,
+    onReservationsClick: () -> Unit,
     onSettingsClick: () -> Unit
 ) {
     val c = AppTheme.colors
-    val navHome = stringResource(R.string.nav_home)
-    val navTrips = stringResource(R.string.nav_trips)
-    val navGallery = stringResource(R.string.nav_gallery)
-    val navSettings = stringResource(R.string.nav_settings)
-
     Surface(color = c.cardSurface, modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.fillMaxWidth().navigationBarsPadding().height(64.dp),
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            BottomNavItem("🏠", navHome, currentRoute == Routes.HOME, onHomeClick)
-            BottomNavItem("🗺️", navTrips, currentRoute == Routes.TRIPS_LIST || currentRoute?.startsWith("trip_detail/") == true, onTripsClick)
-            BottomNavItem("🖼️", navGallery, currentRoute == Routes.GALLERY_ALL || currentRoute?.startsWith("trip_gallery/") == true, onGalleryClick)
-            BottomNavItem("⚙️", navSettings, currentRoute == Routes.PREFERENCES, onSettingsClick)
+            BottomNavItem("🏠", "Home", currentRoute == Routes.HOME, onHomeClick)
+            BottomNavItem("🏨", "Hotels", currentRoute == Routes.HOTEL_SEARCH, onHotelsClick)
+            BottomNavItem("📋", "Bookings", currentRoute == Routes.RESERVATIONS, onReservationsClick)
+            BottomNavItem("⚙️", "Settings", currentRoute == Routes.PREFERENCES, onSettingsClick)
         }
     }
 }
@@ -322,8 +300,7 @@ private fun BottomNavItem(emoji: String, label: String, selected: Boolean, onCli
     val c = AppTheme.colors
     Column(
         modifier = Modifier.clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(emoji, fontSize = 20.sp)
         Spacer(Modifier.height(2.dp))
